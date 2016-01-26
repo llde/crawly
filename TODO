@@ -1,0 +1,48 @@
+
+TODO Cralwy post 1.0 version
+
+
+Better Interface:{
+
+AsyncLoader:
+	SubmitCheck(URL url) method
+
+Cralwer: 
+	isSuspended() method
+
+	isTerminated() method
+
+	resubmit(URI uri) method
+
+	getProgression() method	
+
+siteCralwer: idem
+
+cralwer e sitecralwer 
+	Use Observable Collections
+}
+
+
+
+Generic interface for GUI chain
+
+Internationalizations (eng translation)
+
+Better Options
+
+Use different Web framework
+
+Trasfrom part to the code in Scalalang (expecially singletons)
+
+Plugin Interface
+
+thread delegation for SiteCrawler creartions
+
+Others
+
+Security constraints.
+
+Exception delegation
+
+Fix Maximum distance bug
+

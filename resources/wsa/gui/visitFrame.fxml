@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="borderBase" prefHeight="450.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <VBox fx:id="vboxDownload" alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="363.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="labelDownload" text="Inserisci un dominio:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <TextField fx:id="textDominio" prefHeight="25.0" prefWidth="432.0" promptText="es: www.sito.org">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <VBox fx:id="vboxCenter" alignment="TOP_CENTER" prefHeight="152.0" prefWidth="363.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Inserisci qualche seed:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="TOP_CENTER" prefHeight="34.0" prefWidth="360.0">
+               <children>
+                  <TextField fx:id="textSeed" prefHeight="26.0" prefWidth="291.0" promptText="es: www.sito.org/cose">
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Button fx:id="buttonAggiungiSeed" mnemonicParsing="false" text="Aggiungi">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </VBox.margin>
+            </HBox>
+            <ListView fx:id="listSeed" minHeight="200.0" prefHeight="200.0" prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </VBox.margin>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </ListView>
+            <HBox fx:id="hboxValidazione" alignment="CENTER_RIGHT" prefHeight="44.0" prefWidth="320.0">
+               <children>
+                  <Label fx:id="labelValidazione" alignment="TOP_CENTER" contentDisplay="TOP" text="Label" textAlignment="CENTER" />
+                  <Button fx:id="buttonValida" mnemonicParsing="false" text="Valida">
+                     <HBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="20.0" right="20.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="hboxCartella" alignment="CENTER" prefHeight="34.0" prefWidth="360.0">
+               <children>
+                  <Button fx:id="buttonSfoglia" mnemonicParsing="false" text="Sfoglia...">
+                     <HBox.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Label fx:id="labelCartella" alignment="CENTER" text="Nessuna cartella selezionata...">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </center>
+   <bottom>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <ButtonBar prefHeight="40.0" prefWidth="200.0">
+              <buttons>
+                  <Button fx:id="buttonCancella" mnemonicParsing="false" text="Cancella" />
+                <Button fx:id="buttonAvvia" mnemonicParsing="false" text="Avvia" />
+              </buttons>
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </VBox.margin>
+            </ButtonBar>
+         </children>
+      </VBox>
+   </bottom>
+</BorderPane>

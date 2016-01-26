@@ -1,0 +1,22 @@
+Cralwy : A Web Site Analyzer in Java and JavaFX
+
+
+https://bitbucket.org/handymanny/crawly-stable  Versione 1.0 Stable
+
+
+Riferirsi al TODO per informazioni sullo stato corretne del progetto.
+
+Require Java 8.
+
+Se usato intellij idea le risorse sono già nella posizioe corretta
+altrimenti il programma va compilato con:
+(tutti i comandi vanno eseguiti con cralwy con directory attiva da terminale)
+javac -classpath src src/wsa/gui/Main.java
+
+ed avviarle con java -cp src:resources wsa.gui.Main  (o ; al posto di : se su windows)
+
+Know Bugs:
+ L'algoritmo per la distanza massima non dà il risultato corretto.
+ Il jar esguibile non si crea correttamente
+
+

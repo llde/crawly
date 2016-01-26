@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<TabPane fx:id="tabPaneDistanza" maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+  <tabs>
+    <Tab fx:id="tabIdentificazione" text="Identificazione">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="97.0" layoutY="14.0" text="Identifica le pagine che vanno da una visita all'altra.&#10;L'esecuzione potrebbe richiedere del tempo, potrai continuare&#10;ad usare l'applicazione.&#10;I risultati verranno mostrati appena pronti." />
+                  <ComboBox fx:id="comboDa" layoutX="150.0" layoutY="103.0" prefHeight="26.0" prefWidth="353.0" />
+                  <ComboBox fx:id="comboVerso" layoutX="152.0" layoutY="158.0" prefHeight="26.0" prefWidth="351.0" />
+                  <Label layoutX="96.0" layoutY="108.0" text="Da:" />
+                  <Label layoutX="98.0" layoutY="163.0" text="Verso:" />
+                  <Label layoutX="101.0" layoutY="200.0" text="NB: È necessario che le visite siano terminate per procedere." />
+                  <Button fx:id="buttonCalcola" layoutX="434.0" layoutY="230.0" mnemonicParsing="false" text="Calcola" />
+                  <Label fx:id="labelCalcolo" layoutX="384.0" layoutY="266.0" text="Calcolo in corso..." />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+      <Tab text="Distanze tra pagine">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="96.0" layoutY="14.0" text="Ottiene la distanza tra due pagine appartenenti allo stesso&#10;dominio (Stessa visita)." />
+                  <Label layoutX="96.0" layoutY="58.0" text="Visita: " />
+                  <ComboBox fx:id="comboVisita" layoutX="154.0" layoutY="53.0" prefHeight="26.0" prefWidth="320.0" />
+                  <ComboBox fx:id="comboDistanzaDa" layoutX="154.0" layoutY="106.0" prefHeight="26.0" prefWidth="320.0" />
+                  <ComboBox fx:id="comboDistanzaVerso" layoutX="154.0" layoutY="147.0" prefHeight="26.0" prefWidth="320.0" />
+                  <Label layoutX="98.0" layoutY="111.0" text="Da:" />
+                  <Label layoutX="100.0" layoutY="152.0" text="Verso:" />
+                  <Label layoutX="101.0" layoutY="192.0" text="NB: È necessario che le visite siano terminate per &#10;procedere." />
+                  <Button fx:id="buttonDistanzaCalcola" layoutX="408.0" layoutY="238.0" mnemonicParsing="false" text="Calcola" />
+                  <Button fx:id="buttonDistanzaMaxCalcola" layoutX="207.0" layoutY="238.0" mnemonicParsing="false" text="Calcola distanza massima" />
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+  </tabs>
+</TabPane>

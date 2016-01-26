@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem fx:id="menuNuovaVisita" mnemonicParsing="false" text="Nuova visita" />
+                  <MenuItem fx:id="menuApriVisita" mnemonicParsing="false" text="Apri visita" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+              <MenuItem fx:id="menuChiudi" mnemonicParsing="false" text="Chiudi" />
+            </items>
+          </Menu>
+            <Menu fx:id="menuStrumenti" mnemonicParsing="false" text="Strumenti">
+               <items>
+                  <MenuItem fx:id="menuImpostazioni" mnemonicParsing="false" text="Impostazioni" />
+                  <MenuItem fx:id="menuAzioniVisite" mnemonicParsing="false" text="Azioni su più visite" />
+               </items>
+            </Menu>
+          <Menu fx:id="menuAiuto" mnemonicParsing="false" text="Aiuto">
+            <items>
+              <MenuItem fx:id="menuInformazioni" mnemonicParsing="false" text="Informazioni su" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <TabPane fx:id="tabBase" prefHeight="200.0" prefWidth="200.0" rotateGraphic="true" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
