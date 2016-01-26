@@ -15,6 +15,7 @@ Cralwer:
 	resubmit(URI uri) method /Done
 
 	getProgression() method	/Later
+	Unify CralwerResult and CralwerResultBean /Later
 
 siteCralwer:
     idem
@@ -32,19 +33,21 @@ Better generality for wsa.web objects /Done Crated Factory interface for all int
 
 Internationalizations (eng translation)
 
+Implement the possibility for designed cralwer implementation to choose if bypass some non-html pages
+
 Better Options
 
 Use different Web framework
 
-Trasfrom part to the code in Scalalang (expecially singletons)
+Trasfrom part to the code in Scalalang (expecially singletons)  OR Use project Lombok library
 
-Plugin Interface
+Plugin Interface with ClassLoader
 
 thread delegation for SiteCrawler creartions
 
 Others
 
-Security constraints.
+Security constraints. (Expecially prevent dispose to being called outside the MainFrame or CloseFrame)
 
 Exception delegation
 

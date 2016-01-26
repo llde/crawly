@@ -2,8 +2,6 @@ package wsa.gui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import wsa.web.HelperLoader;
-import wsa.web.WebFactory;
 
 /**
  * Created by gaamda on 03/11/2015.
