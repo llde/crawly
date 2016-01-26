@@ -39,7 +39,7 @@ public class GondorLoader implements Loader
                         downloadRes.set(nv);
                         if (nv == Worker.State.SUCCEEDED) {
                             if (we.get().getDocument() != null) {
-                                parser.set(new Parsing(we.get().getDocument()));
+                                parser.set(WebFactory.getParsed(we.get().getDocument()));
                                 synchronized (mybase)  {mybase.notify();}
                             } else {
                                 downloadRes.set(Worker.State.FAILED);

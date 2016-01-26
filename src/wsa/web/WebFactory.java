@@ -1,5 +1,10 @@
 package wsa.web;
 
+import org.w3c.dom.Document;
+import wsa.web.html.Parsed;
+import wsa.web.html.ParsedFactory;
+import wsa.web.html.Parsing;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
@@ -16,11 +21,39 @@ import java.util.function.Predicate;
 public class WebFactory {
 
     private static LoaderFactory load;
+    private static AsyncLoaderFactory asyncload;
+    private static CrawlerFactory cralwer;
+    private static SiteCrawlerFactory site;
+    private static ParsedFactory parser;
 
     /** Imposta la factory per creare Loader
      * @param lf  factory per Loader */
     public static void setLoaderFactory(LoaderFactory lf) {
         load = lf;
+    }
+
+    /** Imposta la factory per creare AsyncLoader
+     * @param lf  factory per AsyncLoader */
+    public static void setAsyncLoaderFactory(AsyncLoaderFactory lf) {
+        asyncload = lf;
+    }
+
+    /** Imposta la factory per creare Cralwer
+     * @param lf  factory per Cralwer */
+    public static void setCralwerFactory(CrawlerFactory lf) {
+        cralwer = lf;
+    }
+
+    /** Imposta la factory per creare SiteCralwer
+     * @param lf  factory per SiteCralwer */
+    public static void setSiteCralwerFactory(SiteCrawlerFactory lf) {
+        site = lf;
+    }
+
+    /** Imposta la factory per creare Parsed
+     * @param lf  factory per Parsed */
+    public static void setParsedFactory(ParsedFactory lf) {
+        parser = lf;
     }
 
     /** Ritorna un nuovo Loader. Se non è stata impostata una factory tramite il
@@ -38,6 +71,7 @@ public class WebFactory {
      * esclusivamente Loader forniti da getLoader.
      * @return un nuovo loader asincrono. */
     public static AsyncLoader getAsyncLoader() {
+        if(asyncload != null) return asyncload.newInstance();
         return new AsyncLoaderNocturnalJOB();
     }
 
@@ -54,7 +88,8 @@ public class WebFactory {
                                      Collection<URI> toLoad,
                                      Collection<URI> errs,
                                      Predicate<URI> pageLink) {
-        return new SemaphoreCrawler(loaded,toLoad,errs, pageLink);
+        if(cralwer != null) return cralwer.newInstance(loaded, toLoad, errs, pageLink);
+        return new SemaphoreCrawler(loaded, toLoad, errs, pageLink);
     }
 
 
@@ -75,6 +110,18 @@ public class WebFactory {
      * @return un SiteCrawler */
     public static SiteCrawler getSiteCrawler(URI dom, Path dir)
             throws IOException {
+        if(site != null) return site.newInstance(dom,dir);
         return new AveSithisSiteCralwer(dom,dir);
+    }
+
+
+    /**
+     * Crea uno specifico Parsed con argomento Document.
+     * @param doc il document
+     * @return un implementazione di parsed.
+     */
+    public static Parsed getParsed(Document doc){
+        if(parser != null) return parser.newInstance(doc);
+        return new Parsing(doc);
     }
 }

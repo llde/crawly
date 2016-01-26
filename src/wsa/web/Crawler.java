@@ -17,6 +17,16 @@ public interface Crawler {
      * @param uri  un URI che si vuole scaricare */
     void add(URI uri);
 
+    /**
+     * Risottomette e forza lo scaricamento dell'uri sia se è
+     * negli scaricati o negli errori.
+     * Se il Cralwer è terminato riprende la visita
+     * @throws IllegalStateException se è cancellato
+     * @param uri un uri
+     */
+    void resubmit(URI uri);
+
+
     /** Inizia l'esecuzione del Crawler se non è già in esecuzione e ci sono URI
      * da scaricare, altrimenti l'invocazione è ignorata. Quando è in esecuzione
      * il metodo isRunning ritorna true.

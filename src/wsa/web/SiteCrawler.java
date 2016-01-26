@@ -39,10 +39,22 @@ public interface SiteCrawler {
      * l'aggiunta non ha nessun effetto. Se invece è un nuovo URI, è aggiunto
      * all'insieme di quelli da scaricare.
      * @throws IllegalArgumentException se uri non appartiene al dominio di
-     * questo SuteCrawlerrawler
+     * questo SiteCrawler
      * @throws IllegalStateException se il SiteCrawler è cancellato
      * @param uri  un URI */
     void addSeed(URI uri);
+
+
+    /**
+     * Risottomette e forza lo scaricamento dell'uri sia se è
+     * negli scaricati o negli errori.
+     * Ignora completamente i controlli di appartenenza al dominio
+     * Se il siteCralwer è terminato riprende la visita
+     * @throws IllegalStateException se è cancellato
+     * @param uri un uri
+     */
+    void resubmit(URI uri);
+
 
     /** Inizia l'esecuzione del SiteCrawler se non è già in esecuzione e ci sono
      * URI da scaricare, altrimenti l'invocazione è ignorata. Quando è in
@@ -100,6 +112,12 @@ public interface SiteCrawler {
     /** Ritorna true se il SiteCrawler è in esecuzione.
      * @return true se il SiteCrawler è in esecuzione */
     boolean isRunning();
+
+    /**
+     * Ritorna il Dominio dle site crawler.
+     * @return il dominio
+     */
+    URI getDomain();
 
     /** Ritorna true se il SiteCrawler è stato cancellato. In tal caso non può
      * più essere usato.

@@ -5,18 +5,20 @@ TODO Cralwy post 1.0 version
 Better Interface:{
 
 AsyncLoader:
-	SubmitCheck(URL url) method
+	SubmitCheck(URL url) method /Done
 
 Cralwer: 
 	isSuspended() method /Done
 
 	isTerminated() method /Done
 
-	resubmit(URI uri) method
+	resubmit(URI uri) method /Done
 
-	getProgression() method	
+	getProgression() method	/Later
 
-siteCralwer: idem
+siteCralwer:
+    idem
+    getDomain() method /Done
 
 cralwer e sitecralwer 
 	Use Observable Collections
@@ -25,6 +27,8 @@ cralwer e sitecralwer
 
 
 Generic interface for GUI chain
+
+Better generality for wsa.web objects /Done Crated Factory interface for all interface in wsa.web and Parsed interface
 
 Internationalizations (eng translation)
 

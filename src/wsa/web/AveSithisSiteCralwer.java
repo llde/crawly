@@ -130,6 +130,16 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         }
     }
 
+    @Override
+    public void resubmit(URI uri) {
+        throwIfCancelled();
+        if(getToLoad().contains(uri)) return;
+        crawl.get().resubmit(uri);
+        if(state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE){
+            this.start();
+        }
+    }
+
     /**
      * Inizia l'esecuzione del SiteCrawler se non è già in esecuzione e ci sono
      * URI da scaricare, altrimenti l'invocazione è ignorata. Quando è in
@@ -326,6 +336,11 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     @Override
     public boolean isRunning() {
         return state.get() == SiteCrawlerState.RUNNING || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE;
+    }
+
+    @Override
+    public URI getDomain() {
+        return dominio;
     }
 
     /**

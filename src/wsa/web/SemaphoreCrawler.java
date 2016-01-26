@@ -162,6 +162,16 @@ public class SemaphoreCrawler implements Crawler {
         if(stato.get() == crawlerState.TERMINATED_DOWNLOAD || stato.get() == crawlerState.TERMINATED) start();
     }
 
+    @Override
+    public void resubmit(URI uri) {
+        throwIfCancelled();
+        if(Scaricare.contains(uri)) return;
+        if(Scaricati.contains(uri)) Scaricati.remove(uri);
+        if(Errori.contains(uri))  Errori.remove(uri);
+        Scaricare.add(uri);
+        if(stato.get() == crawlerState.TERMINATED_DOWNLOAD || stato.get() == crawlerState.TERMINATED) start();
+    }
+
     /**
      * Inizia l'esecuzione del Crawler se non è già in esecuzione e ci sono URI
      * da scaricare, altrimenti l'invocazione è ignorata. Quando è in esecuzione
