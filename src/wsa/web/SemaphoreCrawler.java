@@ -59,7 +59,7 @@ public class SemaphoreCrawler implements Crawler {
                         e.printStackTrace();
                     }
                     try {
-                        buffer.add(async.get().submit(ur.toURL()));
+                        buffer.add(async.get().submitLoad(ur.toURL()));
                         holder.add(ur);
                     } catch (MalformedURLException e) {
                         Errori.add(ur);

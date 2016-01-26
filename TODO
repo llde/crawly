@@ -8,9 +8,9 @@ AsyncLoader:
 	SubmitCheck(URL url) method
 
 Cralwer: 
-	isSuspended() method
+	isSuspended() method /Done
 
-	isTerminated() method
+	isTerminated() method /Done
 
 	resubmit(URI uri) method
 
