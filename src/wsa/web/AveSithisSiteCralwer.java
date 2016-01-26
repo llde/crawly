@@ -339,6 +339,15 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         return state.get() == SiteCrawlerState.CANCELED;
     }
 
+    @Override
+    public boolean isSuspended() {
+        return state.get() == SiteCrawlerState.SUSPENDED;
+    }
+
+    @Override
+    public boolean isTerminated() {
+        return state.get() == SiteCrawlerState.TERMINATED;
+    }
 
 
     /*

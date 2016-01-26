@@ -105,4 +105,18 @@ public interface SiteCrawler {
      * più essere usato.
      * @return true se il SiteCrawler è stato cancellato */
     boolean isCancelled();
+
+
+    /** Ritorna true se il SiteCralwer è sospeso
+     *  @return true se il site crawler è sospeso.
+     */
+    boolean isSuspended();
+
+
+
+    /** Ritorna true se il SiteCralwer è terminato
+     *  @return true se il site crawler è terminato.
+     */
+    boolean isTerminated();
+
 }

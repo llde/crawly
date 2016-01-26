@@ -23,13 +23,15 @@ class StatoDownload {
      * Ottiene lo stato del sitecrawler corrente.
      * Assume che RUNNING stia per "crawling", CANCELLED per "cancellato", SCHEDULED per "pausa"
      * e SUCCEDED per visita completa.
+     * FAILED è stato inconsistente
      * @return Lo stato attuale del worker interno.
      */
     public Worker.State getStato(){
         if(siteCrawler.isCancelled()) return Worker.State.CANCELLED;
+        if(siteCrawler.isTerminated()) return Worker.State.SUCCEEDED;
         if(siteCrawler.isRunning()) return Worker.State.RUNNING;
-        if(!siteCrawler.isRunning() && siteCrawler.getToLoad().isEmpty()) return Worker.State.SUCCEEDED;
-        else return Worker.State.SCHEDULED;
+        if(siteCrawler.isSuspended()) return Worker.State.SCHEDULED;
+        return Worker.State.FAILED;
     }
 
     public synchronized SiteCrawler getWorker(){

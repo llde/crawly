@@ -67,5 +67,19 @@ public interface Crawler {
      * essere usato.
      * @return true se il Crawler è stato cancellato */
     boolean isCancelled();
+
+
+
+    /** Ritorna true se il Cralwer è sospeso
+     *  @return true se il Crawler è sospeso.
+     */
+    boolean isSuspended();
+
+
+
+    /** Ritorna true se il Crawler è terminato
+     *  @return true se il Crawler è terminato.
+     */
+    boolean isTerminated();
 }
 

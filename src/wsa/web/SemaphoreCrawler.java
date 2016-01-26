@@ -300,6 +300,16 @@ public class SemaphoreCrawler implements Crawler {
         return stato.get() == crawlerState.CANCELLED;
     }
 
+    @Override
+    public boolean isSuspended() {
+        return stato.get() == crawlerState.SUSPENDED;
+    }
+
+    @Override
+    public boolean isTerminated() {
+        return stato.get() == crawlerState.TERMINATED;
+    }
+
     /**
      * Risolve i links della pagina con l'uri della pagina stessa
      * Crea di link assoluti
