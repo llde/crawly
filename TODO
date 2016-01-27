@@ -26,6 +26,7 @@ cralwer e sitecralwer
 }
 
 
+Kryo Depend for better serialization
 
 Generic interface for GUI chain
 
@@ -39,7 +40,7 @@ Better Options
 
 Use different Web framework
 
-Trasfrom part to the code in Scalalang (expecially singletons)  OR Use project Lombok library
+Trasfrom part to the code in Scalalang (expecially singletons)  OR Use project Lombok library  /LAter separate branch
 
 Plugin Interface with ClassLoader
 
@@ -53,3 +54,4 @@ Exception delegation
 
 Fix Maximum distance bug
 
+Chache

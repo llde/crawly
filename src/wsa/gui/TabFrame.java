@@ -155,36 +155,36 @@ public class TabFrame extends Tab {
                 e.printStackTrace();
             }
         }
+        Thread t = new Thread(() -> {
+            this.setText(dom != null ? dom.toString() : "Unknow dom");
 
-        this.setText(dom != null? dom.toString() : "Unknow dom");
+            this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
 
-        this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
-
-        this.tableData.setItems(gd.getDataList());  // Inizializza items tabella.
+            this.tableData.setItems(gd.getDataList());  // Inizializza items tabella.
 
         /*
         Inizializza le label per le statistiche, inoltre aggiunge un invalidation listner per
         aggiornarle.
         */
 
-        tableData.getItems().addListener((InvalidationListener) observable -> {
-            long visitati = tableData.getItems().stream().filter(page -> page.getExc() == null).count();
-            long errori = tableData.getItems().stream().filter(page -> page.getExc() != null).count();
-            long indom = tableData.getItems().stream().filter(Page::getPageLink).count();
-            Platform.runLater(() -> {
-                labelVisitati.setText(String.valueOf(visitati));
-                labelErrori.setText(String.valueOf(errori));
-                labelDominio.setText(String.valueOf(indom));
-            });
-            if (gd.getPageWithMaxPointers().get() != null && loading.get()) {                                           //in caso di recupero visita
-                Platform.runLater(()->{
-                    labelMaxPointers.setText(gd.getPageWithMaxPointers().getValue().ptrNumbers().toString());
-                    Tooltip tt = new Tooltip(gd.getPageWithMaxPointers().getValue().getURI().toString());
-                    labelMaxPointers.setTooltip(tt);
-                    loading.set(false);
+            tableData.getItems().addListener((InvalidationListener) observable -> {
+                long visitati = tableData.getItems().stream().filter(page -> page.getExc() == null).count();
+                long errori = tableData.getItems().stream().filter(page -> page.getExc() != null).count();
+                long indom = tableData.getItems().stream().filter(Page::getPageLink).count();
+                Platform.runLater(() -> {
+                    labelVisitati.setText(String.valueOf(visitati));
+                    labelErrori.setText(String.valueOf(errori));
+                    labelDominio.setText(String.valueOf(indom));
                 });
-            }
-        });
+                if (gd.getPageWithMaxPointers().get() != null && loading.get()) {                                           //in caso di recupero visita
+                    Platform.runLater(() -> {
+                        labelMaxPointers.setText(gd.getPageWithMaxPointers().getValue().ptrNumbers().toString());
+                        Tooltip tt = new Tooltip(gd.getPageWithMaxPointers().getValue().getURI().toString());
+                        labelMaxPointers.setTooltip(tt);
+                        loading.set(false);
+                    });
+                }
+            });
 
         /*
         Aggiunge un listner per il cambiamento dei massimi nelle strutture dati.
@@ -192,38 +192,40 @@ public class TabFrame extends Tab {
         Ci sono anche dei Tooltip per mostrare quali pagine abbiano più puntati/putannti.
          */
 
-        gd.getPageWithMaxLinks().addListener(observable -> {
-            labelMaxLinks.setText(gd.getPageWithMaxLinks().getValue().linksNumber().toString());
-            Tooltip tt = new Tooltip(gd.getPageWithMaxLinks().getValue().getURI().toString());
-            labelMaxLinks.setTooltip(tt);
-        });
+            gd.getPageWithMaxLinks().addListener(observable -> {
+                labelMaxLinks.setText(gd.getPageWithMaxLinks().getValue().linksNumber().toString());
+                Tooltip tt = new Tooltip(gd.getPageWithMaxLinks().getValue().getURI().toString());
+                labelMaxLinks.setTooltip(tt);
+            });
 
-        gd.getPageWithMaxPointers().addListener(observable -> {
-            labelMaxPointers.setText(gd.getPageWithMaxPointers().getValue().ptrNumbers().toString());
-            Tooltip tt = new Tooltip(gd.getPageWithMaxPointers().getValue().getURI().toString());
-            labelMaxPointers.setTooltip(tt);
-        });
+            gd.getPageWithMaxPointers().addListener(observable -> {
+                labelMaxPointers.setText(gd.getPageWithMaxPointers().getValue().ptrNumbers().toString());
+                Tooltip tt = new Tooltip(gd.getPageWithMaxPointers().getValue().getURI().toString());
+                labelMaxPointers.setTooltip(tt);
+            });
 
         /*
         Setta i grafici di sessione.
         Setta anche dei changeListner per aggiornarli, usa dei Wrapper.
          */
-        this.pieEntranti.setData(gd.getEntrantiPieData());
-        this.pieUscenti.setData(gd.getUscentiPieData());
-        this.entersTable.setItems(entersWrapList);
-        this.exitTable.setItems(exitWrapList);
+            this.pieEntranti.setData(gd.getEntrantiPieData());
+            this.pieUscenti.setData(gd.getUscentiPieData());
+            this.entersTable.setItems(entersWrapList);
+            this.exitTable.setItems(exitWrapList);
 
-        gd.getEntrantiPieData().addListener((InvalidationListener) observable -> {
-            entersWrapList.clear();
-            if(gd != null)
-            gd.getEntrantiPieData().forEach(data -> entersWrapList.add(new Wrap<>(data.getName(), (int)data.getPieValue())));
+            gd.getEntrantiPieData().addListener((InvalidationListener) observable -> {
+                entersWrapList.clear();
+                if (gd != null)
+                    gd.getEntrantiPieData().forEach(data -> entersWrapList.add(new Wrap<>(data.getName(), (int) data.getPieValue())));
+            });
+            gd.getUscentiPieData().addListener((InvalidationListener) observable -> {
+                exitWrapList.clear();
+                if (gd != null)
+                    gd.getUscentiPieData().forEach(data -> exitWrapList.add(new Wrap<>(data.getName(), (int) data.getPieValue())));
+            });
+            if (run) this.run(); /* Avvia la visita se true */
         });
-        gd.getUscentiPieData().addListener((InvalidationListener) observable -> {
-            exitWrapList.clear();
-            if(gd != null)
-            gd.getUscentiPieData().forEach(data -> exitWrapList.add(new Wrap<>(data.getName(), (int)data.getPieValue())));
-        });
-
+        t.start();
         /*
         In chiusura, per una felice chiusura, rimuove se stessa dalla lista delle tabs principale.
          */
@@ -235,8 +237,6 @@ public class TabFrame extends Tab {
                     ButtonType.CANCEL,
                     this::dispose, ()-> MainFrame.getMainFrame().getTabs().add(this));
         });
-
-        if (run) this.run(); /* Avvia la visita se true */
     }
 
     /**

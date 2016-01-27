@@ -62,7 +62,6 @@ public class WebFactory {
      * con setLoaderFactory.
      * @return un nuovo Loader */
     public static Loader getLoader() {
-        System.out.println(load);
         if(load != null) return load.newInstance();  //Owned!
         return new GondorLoader();
     }
