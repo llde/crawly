@@ -15,7 +15,7 @@ Cralwer:
 	resubmit(URI uri) method /Done
 
 	getProgression() method	/Later
-	Unify CralwerResult and CralwerResultBean /Later
+	Unify CralwerResult and CralwerResultBean /Later (after kryo dependancy)
 
 siteCralwer:
     idem
@@ -25,6 +25,7 @@ cralwer e sitecralwer
 	Use Observable Collections
 }
 
+Implements initialized but unstarted visit (Need some refactor of GestoreDownload init)
 
 Kryo Depend for better serialization
 
@@ -55,3 +56,5 @@ Exception delegation
 Fix Maximum distance bug
 
 Chache
+
+Recover visit: make the first downlaoded page as the first position

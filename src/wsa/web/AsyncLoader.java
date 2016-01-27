@@ -20,7 +20,7 @@ public interface AsyncLoader {
      * @return Future per ottenere il risultato in modo asincrono
      * @throws IllegalStateException se il loader è chiuso
      */
-    Future<Exception> submitCheck(URL url);
+    Future<LoadResult> submitCheck(URL url);
 
     /** Chiude il loader e rilascia tutte le risorse. Dopo di ciò non può più
      * essere usato. */

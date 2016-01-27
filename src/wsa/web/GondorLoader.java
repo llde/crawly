@@ -60,12 +60,12 @@ public class GondorLoader implements Loader
 
 
     @Override
-    public synchronized LoadResult load(URL url) {
+    public LoadResult load(URL url) {
         err = null;
         Exception t;
         downloadRes.set(null);
         parser.set(null);
-        t = check(url);
+        t = control(url);
         if(t != null) return new LoadResult(url, null, t);
         Platform.runLater(() -> {
             try {
@@ -94,7 +94,12 @@ public class GondorLoader implements Loader
     }
 
     @Override
-    public Exception check(URL url) {               //Ritorna eventuali errori nel Download della pagina
+    public LoadResult check(URL url) {               //Ritorna eventuali errori nel Download della pagina
+        Exception e = control(url);
+        return new LoadResult(url, null, e);
+    }
+
+    private Exception control(URL url){
         try {
             URLConnection connessione = url.openConnection();                            //Parte presa dalla lezione
             connessione.setRequestProperty("User-Agent", "Mozilla/5.0");

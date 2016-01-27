@@ -13,7 +13,6 @@ public interface Loader {
     /** Ritorna null se l'URL è scaricabile senza errori, altrimenti ritorna
      * un'eccezione che riporta l'errore.
      * @param url  un URL
-     * @return null se l'URL è scaricabile senza errori, altrimenti
-     * l'eccezione */
-    Exception check(URL url);
+     * @return un LoadResult con URL ed eventuale eccezione */
+    LoadResult check(URL url);
 }

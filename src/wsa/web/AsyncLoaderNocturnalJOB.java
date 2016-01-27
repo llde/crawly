@@ -57,9 +57,9 @@ public class AsyncLoaderNocturnalJOB implements AsyncLoader {
      * @throws IllegalStateException se il loader è chiuso
      */
     @Override
-    public Future<Exception> submitCheck(URL url) {
+    public Future<LoadResult> submitCheck(URL url) {
         if(isShutdown()) throw new IllegalArgumentException();
-        Callable<Exception> async = () ->{
+        Callable<LoadResult> async = () ->{
             Loader l = WebFactory.getLoader();
             return l.check(url);
         };
