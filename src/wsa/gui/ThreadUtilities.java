@@ -66,8 +66,8 @@ public class ThreadUtilities {
             if(t.get() == null) continue;
             if(t.get().isDaemon() || !t.get().isAlive()) continue;
             t.get().interrupt();
-            globalExecutor.shutdownNow();
         }
+        if(globalExecutor != null)globalExecutor.shutdownNow();
         Platform.exit();
        // System.exit(0);
     }
