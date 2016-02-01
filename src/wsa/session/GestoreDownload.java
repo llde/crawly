@@ -30,9 +30,8 @@ import java.util.*;
  * può essere lanciato, usando solo siteCrawler forniti da WebFactory. Il gestore assume che tutto sia formattato
  * correttamente, quindi ogni dato è inviato al gestore in maniera corretta.
  *
- * Implementa runnable cosicché possa venir lanciato dal programma su un thread separato.
- */
-public class GestoreDownload implements Runnable {
+ * */
+public class GestoreDownload {
 
     private TabFrame mytab;                                        //La TabFrame di riferimento
     private final Dominio dom;                                     //Il Dominio dell'esplorazione
@@ -75,6 +74,16 @@ public class GestoreDownload implements Runnable {
         this.path = p;
         this.dataset = new GestoreDati(resultMap, m);
         this.mytab = tb;
+        try {
+            stato = new StatoDownload(WebFactory.getSiteCrawler(dom == null ? null : dom.getURI(), path));
+            if(seeds != null) seeds.forEach(seed -> stato.getWorker().addSeed(seed.getURI()));
+            if(dom == null){
+                stato.getWorker().getLoaded().stream().forEach(this::recoverPageInfo);
+                stato.getWorker().getErrors().stream().forEach(this::recoverPageInfo);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -222,23 +231,6 @@ public class GestoreDownload implements Runnable {
     public synchronized Worker.State getStato(){
         if (this.stato == null) return null;
         return this.stato.getStato();
-    }
-
-    @Override
-    public void run() {
-        try {
-            stato = new StatoDownload(WebFactory.getSiteCrawler(dom == null ? null : dom.getURI(), path));
-            if(seeds != null) seeds.forEach(seed -> stato.getWorker().addSeed(seed.getURI()));
-            if(dom == null){
-                stato.getWorker().getLoaded().stream().forEach(this::recoverPageInfo);
-                stato.getWorker().getErrors().stream().forEach(this::recoverPageInfo);
-            }
-            stato.getWorker().start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        toLaunch = ThreadUtilities.CreateThread(runtoLaunch);
-        toLaunch.start();
     }
 
     /*finchè gira, questo Runnable getta incessantemente dal SiteCrawler */

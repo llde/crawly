@@ -344,8 +344,10 @@ public class TabFrame extends Tab {
      * Non avvierà nulla se il gestore download è stato cancellato.
      */
     private void run(){
-        if (gd.getStato() != null) return;
-        Thread laucher = ThreadUtilities.CreateThread(() -> this.gd.run());
+        System.out.println(gd.getStato());
+        if (gd.getStato() != Worker.State.READY) return;
+        //TODO unire il metodo con start()
+        Thread laucher = ThreadUtilities.CreateThread(() -> this.gd.start());
         laucher.setDaemon(true);
         laucher.setName("Thread di visita");
         laucher.start();

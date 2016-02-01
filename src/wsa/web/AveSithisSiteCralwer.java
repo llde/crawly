@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 public class AveSithisSiteCralwer implements SiteCrawler {
     private enum SiteCrawlerMode{EXPLORATION_ONLY, EXPLORATION_SAVE, LOAD_EXPLORATION_SAVE}
-    private enum SiteCrawlerState{RUNNING, SUSPENDED, CANCELED , TERMINATED_PROGRESSION_ACTIVE, TERMINATED}
+    private enum SiteCrawlerState{INIT,RUNNING, SUSPENDED, CANCELED , TERMINATED_PROGRESSION_ACTIVE, TERMINATED}
     private final AtomicReference<Crawler> crawl = new AtomicReference<>(null);
     private final AtomicReference<SiteCrawlerState> state = new AtomicReference<>(null);
     private SiteCrawlerMode mode = null;
@@ -87,7 +87,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             if(!dir.toFile().isDirectory() || !file.toFile().exists()) throw new IllegalArgumentException("Non è un archivio di visita di questo SiteCralwer");
             System.out.println("Visita in ripresa");
             mode = SiteCrawlerMode.LOAD_EXPLORATION_SAVE;
-            state.set(SiteCrawlerState.SUSPENDED);
+            state.set(SiteCrawlerState.INIT);
             archiviazione = dir;
             this.LoadVisit();
             crawl.set(WebFactory.getCrawler(LoadedTemp, toLoadTemp, errorsTemp, (uri -> SiteCrawler.checkSeed(dominio, uri))));
@@ -95,14 +95,14 @@ public class AveSithisSiteCralwer implements SiteCrawler {
 
         else if(dir == null)  {
             mode = SiteCrawlerMode.EXPLORATION_ONLY;
-            state.set(SiteCrawlerState.SUSPENDED);
+            state.set(SiteCrawlerState.INIT);
             dominio = dom;
             crawl.set(WebFactory.getCrawler(new HashSet<>(), new HashSet<>(), new HashSet<>(), (ur) -> SiteCrawler.checkSeed(dominio, ur)));
         }  //Caso solo visita.
 
         else {
             mode = SiteCrawlerMode.EXPLORATION_SAVE;
-            state.set(SiteCrawlerState.SUSPENDED);
+            state.set(SiteCrawlerState.INIT);
             crawl.set(WebFactory.getCrawler(new HashSet<>(), new HashSet<>(), new HashSet<>(), (ur) -> SiteCrawler.checkSeed(dominio, ur)));
             dominio = dom;
             archiviazione = dir;   //Controllare la presenza di un archivio già presente.
@@ -151,7 +151,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     public void start() {
         throwIfCancelled();
         if(isRunning()) return;
-        if(state.get() == SiteCrawlerState.SUSPENDED || state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE) {
+        if(state.get() == SiteCrawlerState.INIT || state.get() == SiteCrawlerState.SUSPENDED || state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE) {
             getterr = new Thread(getter);
             getterr.setPriority(Thread.MIN_PRIORITY);
             getterr.setName("Ave Sithis Site Crawler Thread- Getter Thread");
