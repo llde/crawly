@@ -15,6 +15,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="org.projectlombok:lombok:1.16.6" level="project" />
     <orderEntry type="library" exported="" name="org.projectlombok:lombok-utils:1.16.6" level="project" />
-    <orderEntry type="library" name="com.esotericsoftware:kryo:3.0.3" level="project" />
+    <orderEntry type="library" exported="" name="com.esotericsoftware:kryo:3.0.3" level="project" />
   </component>
 </module>

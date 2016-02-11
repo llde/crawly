@@ -9,6 +9,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -18,7 +19,17 @@ import java.util.Random;
  * Settings del programma.
  */
 public class Settings {
-
+    static class Setting{
+        private String ID;
+        private String Type;  //b boolean, i integer, f float, s String, c char,
+        private String Value;
+        Setting(String id, String type, String  value){
+            ID  = id;
+            Type = type;
+            Value = value;
+        }
+    }
+    public static HashMap<String, Setting> settings = new HashMap<>();
     public static Integer RES_GRABBER_MILLIS = 1000;
     public final static SimpleBooleanProperty CR_FOLLOW = new SimpleBooleanProperty(true);
     public static boolean RUN_WITH_LOGO = false;

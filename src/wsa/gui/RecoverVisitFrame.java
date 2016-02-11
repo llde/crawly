@@ -16,12 +16,11 @@ public class RecoverVisitFrame {
     Runnable openvisit = ()->{
         f = OtherFrames.openFolderFrame(null, "Seleziona la cartella da cui caricare una visita");
         found = false;
-        for(File file : f.listFiles()){
-            if(file.getName().equalsIgnoreCase("DOM.crawly")){
-                found = true;
-                break;
-            }
+        if(f.exists() && f.isDirectory() && f.listFiles().length > 0){
+            found = true;
+            //TODO Better handling after Implementing NotAVisitException.
         }
+
     };
 
     public RecoverVisitFrame() {

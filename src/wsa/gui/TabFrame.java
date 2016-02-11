@@ -131,11 +131,11 @@ public class TabFrame extends Tab {
                 this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
             } catch (IOException e) {
                 e.printStackTrace();
-                this.setText("Preparazione visita fallita ");
+                Platform.runLater(()-> this.setText("Preparazione visita fallita"));
                 //TODO notify the users about IOExceptions.
             }
             if(dominio == null) this.dom = Dominio.getDomainSneaky(gd.getDomain().toString());
-            this.setText(dom != null ? dom.toString() : "Unknow dom");
+            Platform.runLater(() -> this.setText(dom != null ? dom.toString() : "Unknow dom"));
             this.tableData.setItems(gd.getDataList());  // Inizializza items tabella.
 
         /*
