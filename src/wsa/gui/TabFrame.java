@@ -35,6 +35,7 @@ import java.beans.XMLEncoder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -124,42 +125,17 @@ public class TabFrame extends Tab {
 
         this.dom = dominio;   // Il dominio di visita
         this.path = p;  // Il path di visita
-
-        AtomicBoolean loading = new AtomicBoolean(false);
-
-        /*
-        In caso di caricamento di una visita pregressa, crawly proverà a caricare il dominio di visita.
-        Dominio che verrà poi (re)inizializzato. Se il dominio è diverso da null, questo if viene saltato.
-         */
-        if (this.dom == null && path != null){
-            try {
-                XMLDecoder dec = new XMLDecoder(new FileInputStream(path.toString() + "/DOM.crawly"));
-                this.dom = new Dominio((String)dec.readObject());
-                dec.close();
-                loading.set(true);
-            } catch (FileNotFoundException | DominioException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /*
-        In questo caso è stato scelto il salvataggio, pertanto, la tab si preoccupa di salvare la visita
-        nel path selezionato.
-         */
-        else if(path != null  && this.dom != null){
-            try {
-                XMLEncoder enc = new XMLEncoder(new FileOutputStream(path.toString() + "/DOM.crawly"));
-                enc.writeObject(dom.toString());
-                enc.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+        this.setText("Preparazione visita in corso");
         Thread t = new Thread(() -> {
+            try {
+                this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
+            } catch (IOException e) {
+                e.printStackTrace();
+                this.setText("Preparazione visita fallita ");
+                //TODO notify the users about IOExceptions.
+            }
+            if(dominio == null) this.dom = Dominio.getDomainSneaky(gd.getDomain().toString());
             this.setText(dom != null ? dom.toString() : "Unknow dom");
-
-            this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
-
             this.tableData.setItems(gd.getDataList());  // Inizializza items tabella.
 
         /*
@@ -176,12 +152,11 @@ public class TabFrame extends Tab {
                     labelErrori.setText(String.valueOf(errori));
                     labelDominio.setText(String.valueOf(indom));
                 });
-                if (gd.getPageWithMaxPointers().get() != null && loading.get()) {                                           //in caso di recupero visita
+                if (gd.getPageWithMaxPointers().get() != null && dominio == null) {                                           //in caso di recupero visita
                     Platform.runLater(() -> {
                         labelMaxPointers.setText(gd.getPageWithMaxPointers().getValue().ptrNumbers().toString());
                         Tooltip tt = new Tooltip(gd.getPageWithMaxPointers().getValue().getURI().toString());
                         labelMaxPointers.setTooltip(tt);
-                        loading.set(false);
                     });
                 }
             });

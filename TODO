@@ -20,14 +20,15 @@ Cralwer:
 siteCralwer:
     idem
     getDomain() method /Done
+    getAddedSeeds() method
 
 cralwer e sitecralwer 
 	Use Observable Collections
 }
 
-Implements initialized but unstarted visit (Need some refactor of GestoreDownload init)
+Implements initialized but unstarted visit (Need some refactor of GestoreDownload init)  //Gestore donwload refactored
 
-Kryo Depend for better serialization
+Kryo Depend for better serialization  //Kryo added, but stil not used
 
 Generic interface for GUI chain
 
@@ -41,7 +42,7 @@ Better Options
 
 Use different Web framework
 
-Trasfrom part to the code in Scalalang (expecially singletons)  OR Use project Lombok library  /LAter separate branch
+Use project Lombok library  /Integrated project lombok
 
 Plugin Interface with ClassLoader
 
@@ -52,6 +53,10 @@ Others
 Security constraints. (Expecially prevent dispose to being called outside the MainFrame or CloseFrame)
 
 Exception delegation
+
+Notify IOExceptions to the users
+
+Create NotAVisitException to better divide error cases.
 
 Fix Maximum distance bug
 

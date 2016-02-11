@@ -1,5 +1,7 @@
 package wsa.session;
 
+import lombok.Lombok;
+import lombok.SneakyThrows;
 import wsa.exceptions.DominioException;
 import wsa.web.SiteCrawler;
 
@@ -29,6 +31,20 @@ public class Dominio {
             throw new DominioException(e.getInput(), e.getReason());
         }
     }
+
+    /**
+     * Create a new Dominio object, in a silently manner.
+     * Use only with safe uri when an URISintaxException is meant to be
+     * a program error.
+     * Sneakly throw DominioException.
+     * @param uri
+     * @return
+     */
+    @SneakyThrows
+    public static Dominio getDomainSneaky(String uri){
+        return new Dominio(uri);
+    }
+
 
     /**
      * Valida questo dominio secondo le specifiche dell'interfaccia {@link SiteCrawler}.

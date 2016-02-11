@@ -67,24 +67,18 @@ public class GestoreDownload {
      * @param p Un percorso d'archiviazione.
      * @param m Modulo non nullo per le tabelle.
      */
-    public GestoreDownload(Dominio d, List<Seed> s, Path p, Integer m, TabFrame tb){
-
-        this.dom = d;
+    public GestoreDownload(Dominio d, List<Seed> s, Path p, Integer m, TabFrame tb) throws IOException {
         this.seeds = (s == null? new ArrayList<>() : s);
         this.path = p;
         this.dataset = new GestoreDati(resultMap, m);
         this.mytab = tb;
-        try {
-            stato = new StatoDownload(WebFactory.getSiteCrawler(dom == null ? null : dom.getURI(), path));
-            if(seeds != null) seeds.forEach(seed -> stato.getWorker().addSeed(seed.getURI()));
-            if(dom == null){
-                stato.getWorker().getLoaded().stream().forEach(this::recoverPageInfo);
-                stato.getWorker().getErrors().stream().forEach(this::recoverPageInfo);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        stato = new StatoDownload(WebFactory.getSiteCrawler(d == null ? null : d.getURI(), path));
+        this.dom = Dominio.getDomainSneaky(stato.getWorker().getDomain().toString());
+        if(seeds != null) seeds.forEach(seed -> stato.getWorker().addSeed(seed.getURI()));
+        if(d == null){
+            stato.getWorker().getLoaded().stream().forEach(this::recoverPageInfo);
+            stato.getWorker().getErrors().stream().forEach(this::recoverPageInfo);
         }
-
     }
 
     public ObjectProperty<Page> getPageWithMaxLinks(){
@@ -308,4 +302,9 @@ public class GestoreDownload {
         });
     }
 
+
+
+    public URI getDomain(){
+        return stato.getWorker().getDomain();
+    }
 }
