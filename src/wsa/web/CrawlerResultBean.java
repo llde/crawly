@@ -99,6 +99,8 @@ public class CrawlerResultBean {
     }
 
 
+
+
     public static CrawlerResultBean getCRBean(CrawlerResult cr){
         return new CrawlerResultBean(cr.uri,cr.linkPage, cr.links, cr.errRawLinks,cr.exc);
     }

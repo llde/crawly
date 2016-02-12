@@ -86,7 +86,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         if (dom == null) {
             Path file = Paths.get(dir.toString(), "visita.crawly");
             System.out.println(file);
-            if(!dir.toFile().isDirectory() || !file.toFile().exists()) throw new IllegalArgumentException("Non è un archivio di visita di questo SiteCralwer");
+            if(!dir.toFile().isDirectory() || !file.toFile().exists()) throw new VisitException(this, VisitException.VisitState.NOT_RECOGNIZABLE);
             System.out.println("Visita in ripresa");
             mode = SiteCrawlerMode.LOAD_EXPLORATION_SAVE;
             state.set(SiteCrawlerState.INIT);
@@ -393,7 +393,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
      * Permette il recupero della visita
      */
     @SuppressWarnings("unchecked")
-    private void LoadVisit(){
+    private void LoadVisit() throws VisitException, IOException {
         try(XMLDecoder dec = new XMLDecoder(new FileInputStream(archiviazione.toString() + "/visita.crawly"))){
             dominio = (URI)dec.readObject();
             toLoadTemp = Arrays.asList((URI[]) dec.readObject());
@@ -404,10 +404,15 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             progression = Collections.synchronizedMap(new HashMap<>());
             Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progression.put(entry.getKey(), entry.getValue()));
         }
-        catch (FileNotFoundException e) {
+        catch (IOException e) {
             System.err.println("Loading visit: something went wrong, with file reading");
+            throw  new IOException();
         }
-        catch (Exception e){ System.err.println("non ho potuto ricaricare la visita. Forse l'archivio è corrotto?");}
+        catch (RuntimeException e){
+            System.err.println("non ho potuto ricaricare la visita. Forse l'archivio è corrotto?");
+            //TODO handle permission denied. Discover which exception is launched at runtime in this case.
+            throw new VisitException(this, VisitException.VisitState.CORRUPTED);
+        }
     }
 
     /**

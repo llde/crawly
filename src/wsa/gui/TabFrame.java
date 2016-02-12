@@ -127,6 +127,8 @@ public class TabFrame extends Tab {
                 e.printStackTrace();
                 Platform.runLater(()-> this.setText("Preparazione visita fallita"));
                 //TODO notify the users about IOExceptions and VisitException.
+                new EventFrame(e, null);
+                return;
             }
             if(dominio == null) this.dom = Dominio.getDomainSneaky(gd.getDomain().toString());
             Platform.runLater(() -> this.setText(dom != null ? dom.toString() : "Unknow dom"));

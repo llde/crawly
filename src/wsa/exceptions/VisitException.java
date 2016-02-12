@@ -7,7 +7,7 @@ import wsa.web.SiteCrawler;
  */
 public class VisitException extends Exception {
 
-    enum VisitState{NOT_RECOGNIZABLE, CORRUPTED}
+    public enum VisitState{NOT_RECOGNIZABLE, CORRUPTED}
     public VisitException(SiteCrawler sss, VisitState state) {
         super( state == VisitState.NOT_RECOGNIZABLE ?  "Non ho trovato una visita valida per : " : "LA visita sembra corrotta per: "
                 + sss.getClass().getCanonicalName());
