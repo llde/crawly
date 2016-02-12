@@ -18,7 +18,7 @@ public class RecoverVisitFrame {
         found = false;
         if(f.exists() && f.isDirectory() && f.listFiles().length > 0){
             found = true;
-            //TODO Better handling after Implementing NotAVisitException.
+            //TODO Better handling after Implementing VisitException.
         }
 
     };

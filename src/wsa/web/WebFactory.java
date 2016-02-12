@@ -1,6 +1,7 @@
 package wsa.web;
 
 import org.w3c.dom.Document;
+import wsa.exceptions.VisitException;
 import wsa.web.html.Parsed;
 import wsa.web.html.ParsedFactory;
 import wsa.web.html.Parsing;
@@ -108,7 +109,7 @@ public class WebFactory {
      * del SiteCrawler
      * @return un SiteCrawler */
     public static SiteCrawler getSiteCrawler(URI dom, Path dir)
-            throws IOException {
+            throws IOException , VisitException {
         if(site != null) return site.newInstance(dom,dir);
         return new AveSithisSiteCralwer(dom,dir);
     }

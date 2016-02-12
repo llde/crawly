@@ -23,23 +23,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import wsa.API.Wrap;
 import wsa.Settings;
-import wsa.exceptions.DominioException;
 import wsa.exceptions.EventFrame;
+import wsa.exceptions.VisitException;
 import wsa.session.Dominio;
 import wsa.session.GestoreDownload;
 import wsa.session.Page;
 import wsa.session.Seed;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by gaamda on 22/11/15.
@@ -129,10 +123,10 @@ public class TabFrame extends Tab {
         Thread t = new Thread(() -> {
             try {
                 this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
-            } catch (IOException e) {
+            } catch (IOException | VisitException e) {
                 e.printStackTrace();
                 Platform.runLater(()-> this.setText("Preparazione visita fallita"));
-                //TODO notify the users about IOExceptions.
+                //TODO notify the users about IOExceptions and VisitException.
             }
             if(dominio == null) this.dom = Dominio.getDomainSneaky(gd.getDomain().toString());
             Platform.runLater(() -> this.setText(dom != null ? dom.toString() : "Unknow dom"));

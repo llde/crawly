@@ -10,6 +10,7 @@ import javafx.collections.ObservableMap;
 import javafx.concurrent.Worker;
 import javafx.scene.chart.PieChart;
 import wsa.Settings;
+import wsa.exceptions.VisitException;
 import wsa.gui.TabFrame;
 import wsa.gui.ThreadUtilities;
 import wsa.web.CrawlerResult;
@@ -67,7 +68,7 @@ public class GestoreDownload {
      * @param p Un percorso d'archiviazione.
      * @param m Modulo non nullo per le tabelle.
      */
-    public GestoreDownload(Dominio d, List<Seed> s, Path p, Integer m, TabFrame tb) throws IOException {
+    public GestoreDownload(Dominio d, List<Seed> s, Path p, Integer m, TabFrame tb) throws IOException, VisitException {
         this.seeds = (s == null? new ArrayList<>() : s);
         this.path = p;
         this.dataset = new GestoreDati(resultMap, m);

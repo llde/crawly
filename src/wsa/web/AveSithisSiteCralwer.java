@@ -1,5 +1,7 @@
 package wsa.web;
 
+import wsa.exceptions.VisitException;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.FileInputStream;
@@ -78,7 +80,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     };
 
 
-    AveSithisSiteCralwer(URI dom, Path dir) throws IOException {
+    AveSithisSiteCralwer(URI dom, Path dir) throws IOException , VisitException {
         if (dom == null && dir == null) throw new IllegalArgumentException("Non posso creare un SiteCrawler con questi paramentri");
         if(dom != null) if(!SiteCrawler.checkDomain(dom))  throw new IllegalArgumentException("Devi passarmi un dominio valido!!!");
         if (dom == null) {
