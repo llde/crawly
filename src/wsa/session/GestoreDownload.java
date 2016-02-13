@@ -241,7 +241,7 @@ public class GestoreDownload {
                 }
                 else{
                     try {
-                        Thread.sleep(Settings.RES_GRABBER_MILLIS);
+                        Thread.sleep(Settings.config().RES_GRABBER_MILLIS);
                     } catch (InterruptedException e) {
                         return;
                     }

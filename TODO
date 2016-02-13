@@ -26,7 +26,11 @@ cralwer e sitecralwer
 	Use Observable Collections
 }
 
-Implements initialized but unstarted visit (Need some refactor of GestoreDownload init)  //Gestore donwload refactored
+Implements initialized but unstarted visit //Need GUI modification.
+
+GestoreDownload refactor //Done
+
+Remove GestoreDati, Add a shared Data structure //WIP gaamda fork.
 
 Kryo Depend for better serialization  //Kryo added, but stil not used
 
@@ -54,9 +58,9 @@ Security constraints. (Expecially prevent dispose to being called outside the Ma
 
 Exception delegation
 
-Notify IOExceptions to the users
+Notify IOExceptions to the users //Done
 
-Create NotAVisitException to better divide error cases. //DOne
+Create NotAVisitException to better divide error cases. //Done
 
 Fix Maximum distance bug
 
@@ -67,3 +71,5 @@ User Manual
 Recover visit: make the first downlaoded page as the first position
 
 Notifications.
+
+Graph visualization //JGraph / JGraphX library??

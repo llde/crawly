@@ -52,45 +52,45 @@ public class SetFrame {
 
     private @FXML   ColorPicker     colorPtd;
     {
-        colorPtd.setValue(CR_PTR.getValue());
+        colorPtd.setValue(config().CR_PTR.getValue());
         colorPtd.setOnAction(e -> {
-            CR_PTR.setValue(colorPtd.getValue());
+            config().CR_PTR.setValue(colorPtd.getValue());
             System.out.println("Ricalcolo");
             ObjectProperty<Stop[]> stops = new SimpleObjectProperty<>(new Stop[]{
-                    new Stop(0, CR_PTR.get()),
-                    new Stop(1, CR_PTD.get())
+                    new Stop(0, config().CR_PTR.get()),
+                    new Stop(1, config().CR_PTD.get())
             });
-            CR_PTDandPTR = new SimpleObjectProperty<>(
+            config().CR_PTDandPTR = new SimpleObjectProperty<>(
                     new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops.get())
             );
         });
     }
     private @FXML   ColorPicker     colorPtr;
     {
-        colorPtr.setValue(CR_PTD.getValue());
+        colorPtr.setValue(config().CR_PTD.getValue());
         colorPtr.setOnAction(e -> {
-            CR_PTD.setValue(colorPtr.getValue());
+            config().CR_PTD.setValue(colorPtr.getValue());
             ObjectProperty<Stop[]> stops = new SimpleObjectProperty<>(new Stop[]{
-                    new Stop(0, CR_PTR.get()),
-                    new Stop(1, CR_PTD.get())
+                    new Stop(0, config().CR_PTR.get()),
+                    new Stop(1, config().CR_PTD.get())
             });
-            CR_PTDandPTR = new SimpleObjectProperty<>(
+            config().CR_PTDandPTR = new SimpleObjectProperty<>(
                     new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops.get())
             );
         });
     }
     private @FXML   CheckBox        checkFollow;
     {
-        checkFollow.setSelected(Settings.CR_FOLLOW.getValue());
+        checkFollow.setSelected(config().CR_FOLLOW.getValue());
         checkFollow.selectedProperty().addListener((observable, oldValue, newValue) -> {
             checkFollow.setSelected(newValue);
-            Settings.CR_FOLLOW.setValue(newValue);
+            config().CR_FOLLOW.setValue(newValue);
         });
     }
     private @FXML   ComboBox<Constants.grabberMillis>        comboGrabber;
     {
         comboGrabber.getItems().addAll(Constants.grabberMillis.values());
-        switch (Settings.RES_GRABBER_MILLIS){
+        switch (config().RES_GRABBER_MILLIS){
             case 1000:
                 comboGrabber.getSelectionModel().select(Constants.grabberMillis.veloce);
                 break;
@@ -104,13 +104,13 @@ public class SetFrame {
         comboGrabber.setOnAction(e -> {
             switch (comboGrabber.getSelectionModel().getSelectedItem()){
                 case veloce:
-                    Settings.RES_GRABBER_MILLIS = 1000;
+                    config().RES_GRABBER_MILLIS = 1000;
                     break;
                 case medio:
-                    Settings.RES_GRABBER_MILLIS = 2000;
+                    config().RES_GRABBER_MILLIS = 2000;
                     break;
                 case lento:
-                    Settings.RES_GRABBER_MILLIS = 3000;
+                    config().RES_GRABBER_MILLIS = 3000;
                     break;
             }
         });

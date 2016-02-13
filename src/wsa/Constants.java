@@ -56,7 +56,7 @@ public class Constants {
         }
         previousChoice = choice;
         try {
-            Settings.RUN_WITH_LOGO = strings[choice].equals("Non userò LWJGL come minecraft,\n" +
+            Settings.config().RUN_WITH_LOGO = strings[choice].equals("Non userò LWJGL come minecraft,\n" +
                     "giuro su ogni mio bit!")
                     || strings[choice].equals("The JVM said me \"NO\"");
             return strings[choice];

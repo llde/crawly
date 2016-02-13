@@ -194,7 +194,7 @@ public class MainFrame {
                     "Metodologie di programmazione.\n" +
                     "A.A. 2014/2015");
             copyright.setAlignment(Pos.CENTER);
-            VBox box = new VBox((Settings.RUN_WITH_LOGO ? imgv : name), subtitle, copyright);
+            VBox box = new VBox((Settings.config().RUN_WITH_LOGO ? imgv : name), subtitle, copyright);
 
             box.setAlignment(Pos.CENTER);
             stg.setScene(new Scene(box));

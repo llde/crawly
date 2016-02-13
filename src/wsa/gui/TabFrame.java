@@ -618,11 +618,11 @@ public class TabFrame extends Tab {
                         Da notare che, rispetto alla precedente versione, non colora indiscriminatamente e nel caso fa il revert, anzi.
                         */
                         if (data.getPtr().contains(item) && !data.getPtd().contains(item)){
-                            setBackground(new Background(new BackgroundFill(Settings.CR_PTD.get(), new CornerRadii(0), Insets.EMPTY)));
+                            setBackground(new Background(new BackgroundFill(Settings.config().CR_PTD.get(), new CornerRadii(0), Insets.EMPTY)));
                         }else if(!data.getPtr().contains(item) && data.getPtd().contains(item)){
-                            setBackground(new Background(new BackgroundFill(Settings.CR_PTR.get(), new CornerRadii(0), Insets.EMPTY)));
+                            setBackground(new Background(new BackgroundFill(Settings.config().CR_PTR.get(), new CornerRadii(0), Insets.EMPTY)));
                         }else if(data.getPtr().contains(item) && data.getPtd().contains(item)){
-                            this.setBackground(new Background(new BackgroundFill(Settings.CR_PTDandPTR.get(), new CornerRadii(0), Insets.EMPTY)));
+                            this.setBackground(new Background(new BackgroundFill(Settings.config().CR_PTDandPTR.get(), new CornerRadii(0), Insets.EMPTY)));
                         }
                     }
                 });
@@ -675,9 +675,9 @@ public class TabFrame extends Tab {
                         setText(item ? "Si" : "No");
                         setBackground(null);
 
-                        if (item && Settings.CR_FOLLOW.getValue()){
+                        if (item && Settings.config().CR_FOLLOW.getValue()){
                             setTextFill(Color.GREEN);
-                        }else if (!item && Settings.CR_FOLLOW.getValue()){
+                        }else if (!item && Settings.config().CR_FOLLOW.getValue()){
                             setTextFill(Color.RED);
                         }
                     }
