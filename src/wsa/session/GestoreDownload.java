@@ -117,6 +117,10 @@ public class GestoreDownload {
         toLaunch.start();
     }
 
+    public DataGate getDataStruct(){
+        return stato.getWorker().getData();
+    }
+
     /**
      * Modifica il rango inserito precedentemente.
      * @param m Il rango da modificare.

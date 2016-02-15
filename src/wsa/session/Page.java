@@ -3,10 +3,8 @@ package wsa.session;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
-import wsa.elaborazioni.TaskDistanceUri;
 import wsa.exceptions.DominioException;
 import wsa.web.CrawlerResult;
 import wsa.web.CrawlerResultBean;
@@ -76,31 +74,6 @@ public class Page extends Observable{
         if (cr.errRawLinks != null) {
             errRawLinks.addAll(cr.errRawLinks);
         }
-
-        /*
-        Il problema dei links.
-        Per ogni puntato, se esiste la pagina (Che chiamerò "B", mentre questa pagina "A")
-        corrispondente, si chiede a B di inserire come puntante A. Quindi si dice, in breve
-        che A punta B, quindi B è puntato da A. O se si preferisce A è puntante di B.
-        La routine qui sotto fa proprio questo, cercando se possibile, una corrispondenza biunivoca.
-        */
-
-        /*
-        ptd.get().forEach(uri -> {
-            try {
-                Page pg = gd.getResults().get(uri);
-                if (pg != null) {
-                    update(pg);
-                }
-            } catch (Exception ignored) {}
-        });
-
-        ptr.get().addListener((InvalidationListener) observable -> {
-            linksEntranti.get().clear();
-            ptr.get().stream().filter(link -> !link.equals(this.uri)).forEach(linksEntranti.get()::add);
-            gd.updateMaxPointers(this);
-        });
-        */
     }
 
     /**
@@ -272,11 +245,6 @@ public class Page extends Observable{
                     && errRawLinks.size() == o.errRawLinks.size();
         }
         return false;
-    }
-
-    public Map<URI, Integer> getAllDistances(){
-        // TODO: Dummy method to implement.
-        return new HashMap<>();
     }
 
     /**
