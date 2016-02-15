@@ -2,6 +2,7 @@ package wsa.gui;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,11 +25,7 @@ import javafx.stage.Stage;
 import wsa.API.Wrap;
 import wsa.Settings;
 import wsa.exceptions.EventFrame;
-import wsa.exceptions.VisitException;
-import wsa.session.Dominio;
-import wsa.session.GestoreDownload;
-import wsa.session.Page;
-import wsa.session.Seed;
+import wsa.session.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,6 +45,7 @@ public class TabFrame extends Tab {
     private Dominio dom;
     private Path path;
     private GestoreDownload gd;
+    private DataGate dg = null;
     private Scene rootScene;
 
 
@@ -120,19 +118,20 @@ public class TabFrame extends Tab {
         this.dom = dominio;   // Il dominio di visita
         this.path = p;  // Il path di visita
         this.setText("Preparazione visita in corso");
+
+
         Thread t = new Thread(() -> {
             try {
                 this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
-            } catch (IOException | VisitException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 Platform.runLater(()-> this.setText("Preparazione visita fallita"));
-                //TODO notify the users about IOExceptions and VisitException.
-                new EventFrame(e, null);
-                return;
+                //TODO notify the users about IOExceptions.
             }
             if(dominio == null) this.dom = Dominio.getDomainSneaky(gd.getDomain().toString());
             Platform.runLater(() -> this.setText(dom != null ? dom.toString() : "Unknow dom"));
-            this.tableData.setItems(gd.getDataList());  // Inizializza items tabella.
+
+            this.tableData.setItems(gd.getDataStruct().getDataList());  // Inizializza items tabella.
 
         /*
         Inizializza le label per le statistiche, inoltre aggiunge un invalidation listner per
@@ -397,7 +396,7 @@ public class TabFrame extends Tab {
         if (tipo == links.puntanti) {
             data.addAll(selectedElement.getPtr());
             uriStat.setCellValueFactory(param ->
-                            new SimpleObjectProperty<>(selectedElement.getPtrMap().containsKey(param.getValue()))
+                    new SimpleObjectProperty<>(selectedElement.getPtr().contains(param.getValue()))
             );
             selectedElement.getPtrMap().addListener((InvalidationListener) observable -> {
                 data.clear();
@@ -406,7 +405,7 @@ public class TabFrame extends Tab {
         }else{
             data.addAll(selectedElement.getPtd());
             uriStat.setCellValueFactory(param ->
-                            new SimpleObjectProperty<>(selectedElement.getPtdMap().containsKey(param.getValue()))
+                    new SimpleObjectProperty<>(selectedElement.getPtd().contains(param.getValue()))
             );
             selectedElement.getPtdMap().addListener((InvalidationListener) observable -> {
                 uriCol.setVisible(false);
@@ -628,28 +627,28 @@ public class TabFrame extends Tab {
                 });
 
         statusColumn.setCellFactory(param ->
-                        new TableCell<Page,String>(){
-                            @Override
-                            public void updateItem(String item, boolean emtpy) {
-                                super.updateItem(item,emtpy);
-                                if(item == null){
-                                    this.setText(null);
-                                    this.setBackground(null);
-                                }
-                                else{
-                                    if(item.equalsIgnoreCase("")){
-                                        this.setText("Scaricata");
-                                        this.setTextFill(Color.GREEN);
-                                        this.setTextAlignment(TextAlignment.CENTER);
-                                    }
-                                    else{
-                                        this.setText(item);
-                                        this.setTextFill(Color.RED);
-                                        this.setTextAlignment(TextAlignment.CENTER);
-                                    }
-                                }
+                new TableCell<Page,String>(){
+                    @Override
+                    public void updateItem(String item, boolean emtpy) {
+                        super.updateItem(item,emtpy);
+                        if(item == null){
+                            this.setText(null);
+                            this.setBackground(null);
+                        }
+                        else{
+                            if(item.equalsIgnoreCase("")){
+                                this.setText("Scaricata");
+                                this.setTextFill(Color.GREEN);
+                                this.setTextAlignment(TextAlignment.CENTER);
+                            }
+                            else{
+                                this.setText(item);
+                                this.setTextFill(Color.RED);
+                                this.setTextAlignment(TextAlignment.CENTER);
                             }
                         }
+                    }
+                }
         );
 
         followColumn.setCellFactory(param ->
