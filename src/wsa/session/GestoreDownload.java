@@ -260,7 +260,7 @@ public class GestoreDownload {
      */
     private void recoverPageInfo(URI ur) {
         try {
-            Page pg = new Page(stato.getWorker().get(ur), this);
+            Page pg = new Page(stato.getWorker().get(ur));
             resultMap.putIfAbsent(ur, pg);
             updateMaxLinks(pg);
         } catch (Exception e) {

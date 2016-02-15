@@ -1,5 +1,7 @@
 package wsa.web;
 
+import wsa.session.DataGate;
+
 import java.net.URI;
 import java.util.Optional;
 import java.util.Set;
@@ -26,6 +28,9 @@ public interface Crawler {
      */
     void resubmit(URI uri);
 
+    void setData(DataGate dg);
+
+    DataGate getData();
 
     /** Inizia l'esecuzione del Crawler se non è già in esecuzione e ci sono URI
      * da scaricare, altrimenti l'invocazione è ignorata. Quando è in esecuzione
@@ -78,14 +83,10 @@ public interface Crawler {
      * @return true se il Crawler è stato cancellato */
     boolean isCancelled();
 
-
-
     /** Ritorna true se il Cralwer è sospeso
      *  @return true se il Crawler è sospeso.
      */
     boolean isSuspended();
-
-
 
     /** Ritorna true se il Crawler è terminato
      *  @return true se il Crawler è terminato.

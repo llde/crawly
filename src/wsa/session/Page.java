@@ -1,12 +1,11 @@
 package wsa.session;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.*;
-import javafx.concurrent.Worker;
-import wsa.elaborazioni.Executor;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 import wsa.elaborazioni.TaskDistanceUri;
 import wsa.exceptions.DominioException;
 import wsa.web.CrawlerResult;
@@ -28,15 +27,14 @@ public class Page extends Observable{
 
     private final URI uri;                                                                    //L'uri corrispondente al CrawlerResult che ha dato origine alla pagina
     private final BooleanProperty follow = new SimpleBooleanProperty(false);                   //Indica se la pagina sia interna al dominio
-    private final GestoreDownload gd;                                                    //GestoreDownload di riferimento
 
     private final Exception exc;
     private final AtomicReference<ObservableSet<URI>> ptd = new AtomicReference<>(FXCollections.observableSet(new HashSet<>()));                     //links a cui punta la pagina
     private final AtomicReference<ObservableSet<URI>> ptr = new AtomicReference<>(FXCollections.observableSet(new HashSet<>()));                    //links che puntano a questa pagina
     private final AtomicReference<ObservableSet<URI>> linksEntranti = new AtomicReference<>(FXCollections.observableSet(new HashSet<>()));        //links entranti
     private final AtomicReference<ObservableSet<URI>> linksUscenti = new AtomicReference<>(FXCollections.observableSet(new HashSet<>()));        //links uscenti
-    private final ObservableList<URI> links = FXCollections.observableArrayList(new ArrayList<>());                                           //tutti i links dal CrawlerResult
-    private final ObservableList<String> errRawLinks = FXCollections.observableArrayList(new ArrayList<>());                                //tutti il links che hanno dato errore nel CrawlerResult
+    private final List<URI> links = new ArrayList<>();                                           //tutti i links dal CrawlerResult
+    private final List<String> errRawLinks = new ArrayList<>();                                //tutti il links che hanno dato errore nel CrawlerResult
 
     private final ObservableMap<URI, Page> ptrPAGES = FXCollections.observableHashMap();                                                  //Mappa che assegna ad ogni URI le pagine che lo puntano
     private final ObservableMap<URI, Page> ptdPAGES = FXCollections.observableHashMap();                                                 //Mappa che assegna ad ogni URI le pagine che punta
@@ -52,8 +50,6 @@ public class Page extends Observable{
      * un'interfaccia, probabilmente si farà poi.
      *
      * @param cr Il risultato di uno scaricamento del crawler.
-     * @param gd Il gestore dati associato su cui compiere le operazioni di ricerca tra le pagine,
-     *           affinché la pagina stessa aggiorni i suoi insiemi di links dinamicamente.
      * @throws IllegalArgumentException Se cr.uri == null.
      * @throws DominioException Se l'aggiunta dell'uri non va a buon fine.
      * @throws MalformedURLException Se l'aggiunta dell'uri non va a buon fine.
@@ -61,14 +57,13 @@ public class Page extends Observable{
      * @see Seed
      * @see Dominio
      * @see DominioException
-     * @see java.util.UUID
+     * @see UUID
      * @see javafx.scene.web.WebEngine
      */
-    public Page(CrawlerResult cr, GestoreDownload gd) {
+    public Page(CrawlerResult cr) {
         if (cr.uri == null) throw new IllegalArgumentException("URI == null");
 
         uri = cr.uri;
-        this.gd = gd;
         follow.setValue(cr.linkPage);
         exc = cr.exc;
 
@@ -82,10 +77,6 @@ public class Page extends Observable{
             errRawLinks.addAll(cr.errRawLinks);
         }
 
-        gd.getDataList().addListener((InvalidationListener) observable -> {   /* Ogni volta che una nuova pagina nel gd viene scaricata, esegue la routine di update. */
-            gd.getDataList().stream().forEach(this::update);
-        });
-
         /*
         Il problema dei links.
         Per ogni puntato, se esiste la pagina (Che chiamerò "B", mentre questa pagina "A")
@@ -94,20 +85,22 @@ public class Page extends Observable{
         La routine qui sotto fa proprio questo, cercando se possibile, una corrispondenza biunivoca.
         */
 
-        ptd.get().forEach(uri -> { /* Per ogni puntato esegue una ricerca della pagina, e se presente, aggiorna */
+        /*
+        ptd.get().forEach(uri -> {
             try {
                 Page pg = gd.getResults().get(uri);
                 if (pg != null) {
                     update(pg);
                 }
-            } catch (Exception ignored) {}    // Volutamente ignorata
+            } catch (Exception ignored) {}
         });
 
-        ptr.get().addListener((InvalidationListener) observable -> { /* Ad ogni cambiamento aggiorna i links entranti */
+        ptr.get().addListener((InvalidationListener) observable -> {
             linksEntranti.get().clear();
             ptr.get().stream().filter(link -> !link.equals(this.uri)).forEach(linksEntranti.get()::add);
-            gd.updateMaxPointers(this); // Ma funzionerà??? A quanto pare sì.
+            gd.updateMaxPointers(this);
         });
+        */
     }
 
     /**
@@ -116,7 +109,7 @@ public class Page extends Observable{
      * e se la pagina passata punta anch'essa questa pagina, aggiorna i puntanti a questa pagina.
      * @param page La pagina verso la quale aggiornare.
      */
-    private void update(Page page){
+    protected void update(Page page){
         if (ptd.get() != null && ptd.get().contains(page.getURI())){
             page.addPtr(this);
             ptdPAGES.put(page.getURI(), page);
@@ -143,7 +136,7 @@ public class Page extends Observable{
      * @throws MalformedURLException Se l'aggiunta dell'uri non va bene.
      */
     public Page(CrawlerResultBean cr, GestoreDownload gd) throws IllegalArgumentException, DominioException, MalformedURLException {
-        this(cr.getCrawlerResult(), gd);
+        this(cr.getCrawlerResult());
     }
 
     /**
@@ -271,38 +264,6 @@ public class Page extends Observable{
      */
     public ObservableSet<URI> getUscenti(){return this.linksUscenti.get();}
 
-    /**
-     * Ottiene la distanza tra questo pagina e la pagina presa in input.
-     * Il metodo è bloccante (join).
-     * @param p La pagina in input.
-     * @return Un intero per la distanza, -1 è distanza non valida.
-     */
-    public Integer getDistance(Page p) throws InterruptedException {
-        if (gd == null) return null;
-
-        TaskDistanceUri runner = new TaskDistanceUri(gd.getResults(), this, p);
-        runner.run();
-        return runner.getData();
-    }
-
-    /**
-     * Ottiene la distanza tra questa pagina e tutte le altre appartenenti al dominio e
-     * correttamente scaricate.
-     * Il metodo è bloccante, ritorna una mappa dove reperire i dati in formato:
-     * key: URI B.
-     * val: DISTANZA.
-     * @return Una mappa come descritta nel javadoc associato.
-     */
-    public Map<URI, Integer> getAllDistances() throws InterruptedException {
-        Map<URI, Integer> results = new HashMap<>();
-        for (Page page : gd.getDataList()) {    // Una pagina appartiene al dominio se il pagelink è true e l'exc è null
-            if (page.getPageLink() && page.getExc() == null) {
-                results.put(page.getURI(), getDistance(page));
-            }
-        }
-        return results;
-    }
-
     @Override
     public boolean equals(Object other){
         if (other != null && getClass() == other.getClass()){
@@ -311,6 +272,11 @@ public class Page extends Observable{
                     && errRawLinks.size() == o.errRawLinks.size();
         }
         return false;
+    }
+
+    public Map<URI, Integer> getAllDistances(){
+        // TODO: Dummy method to implement.
+        return new HashMap<>();
     }
 
     /**

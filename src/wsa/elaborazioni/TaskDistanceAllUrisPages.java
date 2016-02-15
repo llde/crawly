@@ -86,7 +86,7 @@ public class TaskDistanceAllUrisPages implements Task<Map<Integer,Set<Wrap<URI,U
                             return wraps;
                         });
                     });
-                } catch (InterruptedException e) { /* Ogni errore generato causa il fallimento dell'algoritmo */
+                } catch (Exception e) { /* Ogni errore generato causa il fallimento dell'algoritmo */
                     stato.setValue(Worker.State.FAILED);
                 }
             }
