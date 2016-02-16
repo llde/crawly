@@ -124,7 +124,7 @@ public class TabFrame extends Tab {
             try {
                 this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
             } catch (Exception e) {
-                e.printStackTrace();
+                new EventFrame(e, null);
                 Platform.runLater(()-> this.setText("Preparazione visita fallita"));
                 //TODO notify the users about IOExceptions.
             }

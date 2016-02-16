@@ -44,6 +44,7 @@ public final class DataGate implements Observable{
             FXCollections.observableHashMap()
     );
 
+    //TODO è propro necessario tenersi sia le pagine sia i cralwer result?
     private final ObservableMap<URI, Page> downloadedPageTable = FXCollections.synchronizedObservableMap(
             FXCollections.observableHashMap()
     );

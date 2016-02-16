@@ -18,7 +18,7 @@ import java.util.Random;
  * È Un frame che prende in consegna un buttonType, e fornisce già il pulsante di OK.
  * Col pulsante dato genererà un event.consume(), con l'OK, eseguirà l'evento.
  */
-public class EventFrame extends Thread{
+public class EventFrame{
 
     /**
      * Un eventFrame è una finestra di dialogo che gestisce un messaggio personalizzato con
