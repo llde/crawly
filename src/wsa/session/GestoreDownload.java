@@ -59,7 +59,6 @@ public class GestoreDownload {
     }
 
     private GestoreDati dataset = null;          // TEST
-    Thread toLaunch = null;                      // Thread che verrà usato per gestire il download delle pagine attraverso il Runnable runtoLaunch
 
     /**
      * Crea un gestore dei download.
@@ -104,7 +103,6 @@ public class GestoreDownload {
      * Sospende il gestore download.
      */
     public void pause(){
-        toLaunch.interrupt();
         stato.getWorker().suspend();
     }
 
@@ -113,8 +111,6 @@ public class GestoreDownload {
      */
     public void start(){
         stato.getWorker().start();
-        toLaunch = ThreadUtilities.CreateThread(runtoLaunch);
-        toLaunch.start();
     }
 
     public DataGate getDataStruct(){
@@ -203,7 +199,6 @@ public class GestoreDownload {
             if(mytab != null) mytab.enablebuttons();
             else this.start();
         }
-        toLaunch = ThreadUtilities.CreateThread(runtoLaunch);
     }
 
     /**
@@ -232,28 +227,6 @@ public class GestoreDownload {
         return this.stato.getStato();
     }
 
-    /*finchè gira, questo Runnable getta incessantemente dal SiteCrawler */
-    //(quando ne ha, trasforma i risultati in oggetti Page e riassegna le informazioni)
-
-    private Runnable runtoLaunch = () -> {
-        while(stato.getStato() == Worker.State.RUNNING) {
-            if (Thread.interrupted()) break;
-            Optional<CrawlerResult> cr = stato.getWorker().get();
-            if(cr.isPresent()){
-                if(cr.get().uri != null){
-                    recoverPageInfo(cr.get().uri);
-                }
-                else{
-                    try {
-                        Thread.sleep(Settings.config().RES_GRABBER_MILLIS);
-                    } catch (InterruptedException e) {
-                        return;
-                    }
-                }
-            }
-        }
-        if(stato.getStato() == Worker.State.SUCCEEDED && mytab != null) mytab.pause();
-    };
 
     /**
      * Ricevuto un URI, crea una pagina corrispondente ad esso e l'aggiunge alla mappa <URI,PAGINA> dei risultati.

@@ -1,4 +1,4 @@
-package wsa;
+ package wsa;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;

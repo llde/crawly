@@ -78,12 +78,6 @@ public interface SiteCrawler {
      * rilasciate. */
     void cancel();
 
-    /** Ritorna il risultato relativo al prossimo URI. Se il SiteCrawler non è
-     * in esecuzione, ritorna un Optional vuoto. Non è bloccante, ritorna
-     * immediatamente anche se il prossimo risultato non è ancora pronto.
-     * @throws IllegalStateException se il SiteCrawler è cancellato
-     * @return  il risultato relativo al prossimo URI scaricato */
-    Optional<CrawlerResult> get();
 
     /** Ritorna il risultato del tentativo di scaricare la pagina che
      * corrisponde all'URI dato.

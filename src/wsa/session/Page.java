@@ -7,7 +7,6 @@ import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import wsa.exceptions.DominioException;
 import wsa.web.CrawlerResult;
-import wsa.web.CrawlerResultBean;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -101,16 +100,6 @@ public class Page extends Observable{
         return new CrawlerResult(uri, this.follow.get(), links, errRawLinks, exc);
     }
 
-    /**
-     * Genera una pagina a partire da un crawlerResult.
-     * @param cr Il risultato di uno scaricamento del crawler.
-     * @throws IllegalArgumentException Se cr.uri == null.
-     * @throws DominioException Se l'aggiunta dell'uri non va bene.
-     * @throws MalformedURLException Se l'aggiunta dell'uri non va bene.
-     */
-    public Page(CrawlerResultBean cr, GestoreDownload gd) throws IllegalArgumentException, DominioException, MalformedURLException {
-        this(cr.getCrawlerResult());
-    }
 
     /**
      * Ottiene l'uri relativo a questa pagina.

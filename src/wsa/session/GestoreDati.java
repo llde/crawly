@@ -23,7 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * essere usati da ogni parte dell'applicazione.
  * Elabora i dati per i grafici a torta e per le tabelle con le informazioni degli entranti/uscenti (click sui grafici a torta quindi).
  */
-public class GestoreDati extends Thread {
+@Deprecated
+public class GestoreDati {
 
     private final ObservableMap<URI, Page> uri_pagina;                                                                                           //Mappa che associa ad ogni URI la sua pagina, osservabile
     private final ObservableMap<Integer, Set<URI>> entranti = FXCollections.observableMap(new ConcurrentHashMap<>());     //Mappa che associa <NUMERO DI ENTRANTI, URI CHE NE HANNO QUEL NUMERO>, osservabile

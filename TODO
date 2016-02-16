@@ -30,7 +30,7 @@ Implements initialized but unstarted visit //Need GUI modification.
 
 GestoreDownload refactor //Done
 
-Remove GestoreDati, Add a shared Data structure //WIP gaamda fork.
+Remove GestoreDati, Add a shared Data structure //Done partially.
 
 Kryo Depend for better serialization  //Kryo added, but stil not used
 
@@ -71,5 +71,7 @@ User Manual
 Recover visit: make the first downlaoded page as the first position
 
 Notifications.
+
+Force a standard enumeration for cralwer and sitecralwer state + getState() methods
 
 Graph visualization //JGraph / JGraphX library??

@@ -28,14 +28,11 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     private SiteCrawlerMode mode = null;
     private URI dominio = null;
     private Path archiviazione = null;
-    private NavigableMap<URI,CrawlerResultBean> progressione = Collections.synchronizedNavigableMap(new TreeMap<>());
-    private Map<URI,CrawlerResultBean> progression = Collections.synchronizedMap(new HashMap<>());
-    private final int tempodisalavataggio = 10;
+    private final int tempodisalavataggio = 10; //TODO settings
     private List<URI> toLoadTemp = null;
     private List<URI> LoadedTemp = null;
     private List<URI> errorsTemp = null;
     private Thread site = null;
-    private Thread getterr = null;
     private Thread exceptionSave = null;
     private DataGate dataStruct = null;
     //Per creare thread di salvataggio, quando il thread principale (site) non dovrebbe essere attivo
@@ -57,28 +54,6 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         }
     };
 
-    private Runnable getter = () -> {           //Effettua il Get() asincrono.
-        System.out.println("hey I'm Running   "+ Thread.currentThread().getName());
-        while(crawl.get().isRunning()) {
-            if(Thread.interrupted()) break;
-            Optional<CrawlerResult> cr = crawl.get().get();
-            if(cr.isPresent()){
-                if(cr.get().uri != null){
-                    CrawlerResultBean bean = CrawlerResultBean.getCRBean(cr.get());
-                    progressione.put(bean.getUri(),bean);
-                }
-                else{
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-            }
-        }
-        if(crawl.get().isCancelled()) return;
-        if(!crawl.get().isRunning() && getToLoad().isEmpty()) state.set(SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE);
-    };
 
 
     AveSithisSiteCralwer(URI dom, Path dir) throws IOException {
@@ -110,7 +85,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             dominio = dom;
             archiviazione = dir;   //Controllare la presenza di un archivio già presente.
         }  //Caso visita con salvataggio
-
+//TODO this should be done inside Cralwer
         this.dataStruct = new DataGate(); /* Creating new datagate */
         this.crawl.get().setData(dataStruct); /* Setting the datagate */
     }
@@ -163,21 +138,16 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         throwIfCancelled();
         if(isRunning()) return;
         if(state.get() == SiteCrawlerState.INIT || state.get() == SiteCrawlerState.SUSPENDED || state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE) {
-            getterr = new Thread(getter);
-            getterr.setPriority(Thread.MIN_PRIORITY);
-            getterr.setName("Ave Sithis Site Crawler Thread- Getter Thread");
         }
         state.set(SiteCrawlerState.RUNNING);
         if(mode == SiteCrawlerMode.EXPLORATION_ONLY){
             crawl.get().start();
-            //getterr.start();
         }
         else if(mode == SiteCrawlerMode.EXPLORATION_SAVE){
             site = new Thread(run);
             site.setName("SiteCrawler Thread- Save Subroutine");
             site.start();
             crawl.get().start();
-            getterr.start();
         }
         else  if(mode == SiteCrawlerMode.LOAD_EXPLORATION_SAVE){
             site = new Thread(run);
@@ -205,7 +175,6 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         state.set(SiteCrawlerState.SUSPENDED);
         crawl.get().suspend();
         if(mode != SiteCrawlerMode.EXPLORATION_ONLY ) site.interrupt();
-        getterr.interrupt();
         System.out.println("I'm suspended");
         if(mode != SiteCrawlerMode.EXPLORATION_ONLY) {
             exceptionSave = new Thread(exceptionalsave);
@@ -222,64 +191,13 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     @Override
     public void cancel() {
         if(mode != SiteCrawlerMode.EXPLORATION_ONLY) site.interrupt();
-        getterr.interrupt();
         crawl.get().cancel();
         state.set(SiteCrawlerState.CANCELED);
         toLoadTemp = null;
         LoadedTemp = null;
         errorsTemp = null;
-        progression.clear();
-        progressione.clear();
     }
 
-    /**
-     * Ritorna il risultato relativo al prossimo URI. Se il SiteCrawler non è
-     * in esecuzione, ritorna un Optional vuoto. Non è bloccante, ritorna
-     * immediatamente anche se il prossimo risultato non è ancora pronto.
-     *
-     * @return il risultato relativo al prossimo URI scaricato
-     * @throws IllegalStateException se il SiteCrawler è cancellato
-     */
-    @Override
-    public Optional<CrawlerResult> get() {
-        throwIfCancelled();
-        if(!isRunning()) {
-            return Optional.empty();
-        }
-        if(!progressione.isEmpty()){
-            CrawlerResultBean b = progressione.firstEntry().getValue();
-
-            if (b != null) {
-                progressione.remove(b.getUri(),b);
-                progression.put(b.getUri(), b);
-                return Optional.of(b.getCrawlerResult());
-            }
-        }
-        else if(state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE && progressione.isEmpty()){
-            if(mode != SiteCrawlerMode.EXPLORATION_ONLY) site.interrupt();
-            state.set(SiteCrawlerState.TERMINATED);
-            if(mode != SiteCrawlerMode.EXPLORATION_ONLY) {
-                Thread t = new Thread(() -> {
-                    while (site.isAlive()) {continue;}
-                    if (exceptionSave != null){
-                        if(exceptionSave.isAlive()) while(exceptionSave.isAlive()){continue;}
-                    }
-                    SaveVisit(); //Voglio l'ultimo stato. Se necessario aspetto che tutti gli altri thread di salvataggio muoiano.
-                });
-                t.start();
-            }
-            return Optional.empty();
-        }
-        Optional<CrawlerResult> res =  crawl.get().get();
-        if(res.isPresent()){
-            if(res.get().uri != null){
-                CrawlerResultBean add = CrawlerResultBean.getCRBean(res.get());
-                progression.put(add.getUri(), add);
-                return Optional.of(add.getCrawlerResult());
-            }
-        }
-        return Optional.of(new CrawlerResult(null,false,null,null,null));
-    }
 
     /**
      * Ritorna il risultato del tentativo di scaricare la pagina che
@@ -295,9 +213,8 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     public CrawlerResult get(URI uri) {
         throwIfCancelled();
         if(!getErrors().contains(uri) && !getLoaded().contains(uri)) throw new IllegalArgumentException("Non ho scaricato questo uri");
-        if(progression.containsKey(uri)) return progression.get(uri).getCrawlerResult();
-        else if(progressione.containsKey(uri)) return progressione.get(uri).getCrawlerResult();
-        else throw new IllegalArgumentException("Ho scaricato l'URI ma ancora non appartiene all' Ave Sithis Site Crawler.");
+      //  if(progression.containsKey(uri)) return progression.get(uri).getCrawlerResult();
+       /* else */ throw new IllegalArgumentException("Ho scaricato l'URI ma ancora non appartiene all' Ave Sithis Site Crawler.");
     }
 
     /**
@@ -381,16 +298,17 @@ public class AveSithisSiteCralwer implements SiteCrawler {
      */
     private synchronized void SaveVisit(){
         try {
+            //TODO need to be totally redone.
             XMLEncoder enc = new XMLEncoder(new FileOutputStream(archiviazione.toString() + "/visita.crawly"));
             enc.writeObject(dominio);
             enc.writeObject(getToLoad().toArray(new URI[getToLoad().size()]));
             enc.writeObject(getLoaded().toArray(new URI[getLoaded().size()]));
             enc.writeObject(getErrors().toArray(new URI[getErrors().size()]));
-            List<SaveEntry<URI, CrawlerResultBean>>  appoggio = new ArrayList<>();
-            progressione.entrySet().forEach((entry)->appoggio.add(new SaveEntry<>(entry)));
+            List<SaveEntry<URI, CrawlerResult>>  appoggio = new ArrayList<>();
+   //         progressione.entrySet().forEach((entry)->appoggio.add(new SaveEntry<>(entry)));
             enc.writeObject(appoggio.toArray(new SaveEntry[appoggio.size()]));
             appoggio.clear();
-            progression.entrySet().forEach((entry) -> appoggio.add(new SaveEntry<>(entry)));
+  //          progression.entrySet().forEach((entry) -> appoggio.add(new SaveEntry<>(entry)));
             enc.writeObject(appoggio.toArray(new SaveEntry[appoggio.size()]));
             enc.close();
             System.out.println("Visita salvata");
@@ -408,10 +326,10 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             toLoadTemp = Arrays.asList((URI[]) dec.readObject());
             LoadedTemp = Arrays.asList((URI[]) dec.readObject());
             errorsTemp = Arrays.asList((URI[]) dec.readObject());
-            progressione = Collections.synchronizedNavigableMap(new TreeMap<>());
-            Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progressione.put(entry.getKey(), entry.getValue()));
-            progression = Collections.synchronizedMap(new HashMap<>());
-            Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progression.put(entry.getKey(), entry.getValue()));
+//            progressione = Collections.synchronizedNavigableMap(new TreeMap<>());
+ //           Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progressione.put(entry.getKey(), entry.getValue()));
+ //           progression = Collections.synchronizedMap(new HashMap<>());
+  //          Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progression.put(entry.getKey(), entry.getValue()));
         }
         catch (FileNotFoundException e) {
             System.err.println("Loading visit: something went wrong, with file reading");

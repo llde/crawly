@@ -188,7 +188,6 @@ public class MainFrame {
             Label name = new Label(Constants.APPLICATION_NAME + "  "  + Constants.APPLICATION_VERSION);
 
             ImageView imgv = new ImageView(new Image(this.getClass().getResourceAsStream("./logo.png")));
-
             name.setFont(new Font(30));
             Label copyright = new Label("Nato in seno al corso di\n" +
                     "Metodologie di programmazione.\n" +

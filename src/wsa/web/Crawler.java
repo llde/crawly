@@ -49,13 +49,6 @@ public interface Crawler {
      * può più essere usato. Tutte le risorse devono essere rilasciate. */
     void cancel();
 
-    /** Ritorna il risultato relativo al prossimo URI. Se il Crawler non è in
-     * esecuzione, ritorna un Optional vuoto. Non è bloccante, ritorna
-     * immediatamente anche se il prossimo risultato non è ancora pronto.
-     * @throws IllegalStateException se il Crawler è cancellato
-     * @return  il risultato relativo al prossimo URI scaricato */
-    Optional<CrawlerResult> get();
-
     /** Ritorna l'insieme di tutti gli URI scaricati, possibilmente vuoto.
      * @throws IllegalStateException se il Crawler è cancellato
      * @return l'insieme di tutti gli URI scaricati (mai null) */

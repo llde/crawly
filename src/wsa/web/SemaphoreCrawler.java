@@ -241,28 +241,6 @@ public class SemaphoreCrawler implements Crawler {
         async.get().shutdown();
     }
 
-    /**
-     * Ritorna il risultato relativo al prossimo URI. Se il Crawler non è in
-     * esecuzione, ritorna un Optional vuoto. Non è bloccante, ritorna
-     * immediatamente anche se il prossimo risultato non è ancora pronto.
-     *
-     * @return il risultato relativo al prossimo URI scaricato
-     * @throws IllegalStateException se il Crawler è cancellato
-     */
-    @Override
-    public Optional<CrawlerResult> get() {
-        throwIfCancelled();
-        if(isRunning()) {
-            CrawlerResult cre = progress.get().poll();
-            if (cre != null) return Optional.of(cre);
-            if(progress.get().isEmpty() && stato.get() == crawlerState.TERMINATED_DOWNLOAD) {
-                stato.set(crawlerState.TERMINATED);
-                return Optional.empty();
-            }
-            return Optional.of(new CrawlerResult(null, false, null, null, null));
-        }
-        else return Optional.empty();
-    }
 
     /**
      * Ritorna l'insieme di tutti gli URI scaricati, possibilmente vuoto.
