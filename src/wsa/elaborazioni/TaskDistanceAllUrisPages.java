@@ -5,6 +5,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker;
 import wsa.API.Wrap;
+import wsa.session.DataGate;
 import wsa.session.GestoreDownload;
 
 import java.net.URI;
@@ -26,7 +27,7 @@ public class TaskDistanceAllUrisPages implements Task<Map<Integer,Set<Wrap<URI,U
 
     private ObjectProperty<Worker.State> stato = new SimpleObjectProperty<>(Worker.State.SCHEDULED);
     private final Map<Integer, Set<Wrap<URI, URI>>> resultsURI = new ConcurrentHashMap<>(); /* Mappa dei risultati */
-    private final GestoreDownload gd;
+    private final DataGate gd;
     private boolean interrupt = false;
 
     /**
@@ -34,7 +35,7 @@ public class TaskDistanceAllUrisPages implements Task<Map<Integer,Set<Wrap<URI,U
      * e correttamente scaricate dall'applicazione.
      * @param gd Un Gestore download.
      */
-    public TaskDistanceAllUrisPages(GestoreDownload gd){
+    public TaskDistanceAllUrisPages(DataGate gd){
         this.gd = gd;
     }
 
@@ -74,7 +75,7 @@ public class TaskDistanceAllUrisPages implements Task<Map<Integer,Set<Wrap<URI,U
         gd.getDataList().forEach(page -> {
             if (page.getPageLink() && page.getExc() == null) {
                 try {
-                    Map<URI, Integer> elab = page.getAllDistances(); /* Ottiene le distanze della pagina */
+                    Map<URI, Integer> elab = gd.getAllDistances(page); /* Ottiene le distanze della pagina */
                     elab.forEach((k, v) -> {
                         if (interrupt){ /* Verifica per l'interruzione */
                             return;
@@ -86,7 +87,7 @@ public class TaskDistanceAllUrisPages implements Task<Map<Integer,Set<Wrap<URI,U
                             return wraps;
                         });
                     });
-                } catch (InterruptedException e) { /* Ogni errore generato causa il fallimento dell'algoritmo */
+                } catch (Exception e) { /* Ogni errore generato causa il fallimento dell'algoritmo */
                     stato.setValue(Worker.State.FAILED);
                 }
             }

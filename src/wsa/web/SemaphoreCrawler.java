@@ -3,6 +3,7 @@ package wsa.web;
 import wsa.API.ConditonSemaphore;
 import wsa.Constants;
 import wsa.gui.ThreadUtilities;
+import wsa.session.DataGate;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -22,6 +23,8 @@ import java.util.function.Predicate;
 public class SemaphoreCrawler implements Crawler {
 
     private enum crawlerState{INIT, RUNNING, CANCELLED, SUSPENDED, TERMINATED_DOWNLOAD , TERMINATED}
+
+    private DataGate dg = null;
 
     private final AtomicReference<crawlerState> stato = new AtomicReference<>(crawlerState.INIT);
     private Set<URI> Scaricare = Collections.synchronizedSet(new ConcurrentSkipListSet<>());
@@ -100,6 +103,7 @@ public class SemaphoreCrawler implements Crawler {
                                     cres = new CrawlerResult(mainuri, false, null, null, null);
                                 }
                                 Scaricati.add(mainuri);
+                                this.dg.add(cres); /* Commit to Data Structure */
                             }
                             else{
                                 cres = new CrawlerResult(mainuri, pageLink.test(mainuri), null,null,res.exc);
@@ -170,6 +174,16 @@ public class SemaphoreCrawler implements Crawler {
         if(Errori.contains(uri))  Errori.remove(uri);
         Scaricare.add(uri);
         if(stato.get() == crawlerState.TERMINATED_DOWNLOAD || stato.get() == crawlerState.TERMINATED) start();
+    }
+
+    @Override
+    public void setData(DataGate dg) {
+        this.dg = dg;
+    }
+
+    @Override
+    public DataGate getData() {
+        return this.dg;
     }
 
     /**

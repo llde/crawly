@@ -1,6 +1,6 @@
 package wsa.web;
 
-import wsa.exceptions.VisitException;
+import wsa.session.DataGate;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -37,6 +37,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     private Thread site = null;
     private Thread getterr = null;
     private Thread exceptionSave = null;
+    private DataGate dataStruct = null;
     //Per creare thread di salvataggio, quando il thread principale (site) non dovrebbe essere attivo
     //Viene usato dal metodo suspend
     private Runnable exceptionalsave = () ->{
@@ -80,13 +81,13 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     };
 
 
-    AveSithisSiteCralwer(URI dom, Path dir) throws IOException , VisitException {
+    AveSithisSiteCralwer(URI dom, Path dir) throws IOException {
         if (dom == null && dir == null) throw new IllegalArgumentException("Non posso creare un SiteCrawler con questi paramentri");
         if(dom != null) if(!SiteCrawler.checkDomain(dom))  throw new IllegalArgumentException("Devi passarmi un dominio valido!!!");
         if (dom == null) {
             Path file = Paths.get(dir.toString(), "visita.crawly");
             System.out.println(file);
-            if(!dir.toFile().isDirectory() || !file.toFile().exists()) throw new VisitException(this, VisitException.VisitState.NOT_RECOGNIZABLE);
+            if(!dir.toFile().isDirectory() || !file.toFile().exists()) throw new IllegalArgumentException("Non è un archivio di visita di questo SiteCralwer");
             System.out.println("Visita in ripresa");
             mode = SiteCrawlerMode.LOAD_EXPLORATION_SAVE;
             state.set(SiteCrawlerState.INIT);
@@ -109,6 +110,9 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             dominio = dom;
             archiviazione = dir;   //Controllare la presenza di un archivio già presente.
         }  //Caso visita con salvataggio
+
+        this.dataStruct = new DataGate(); /* Creating new datagate */
+        this.crawl.get().setData(dataStruct); /* Setting the datagate */
     }
 
     /**
@@ -130,6 +134,11 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         if(state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE){
             this.start();
         }
+    }
+
+    @Override
+    public DataGate getData() {
+        return this.dataStruct;
     }
 
     @Override
@@ -161,7 +170,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         state.set(SiteCrawlerState.RUNNING);
         if(mode == SiteCrawlerMode.EXPLORATION_ONLY){
             crawl.get().start();
-            getterr.start();
+            //getterr.start();
         }
         else if(mode == SiteCrawlerMode.EXPLORATION_SAVE){
             site = new Thread(run);
@@ -393,7 +402,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
      * Permette il recupero della visita
      */
     @SuppressWarnings("unchecked")
-    private void LoadVisit() throws VisitException, IOException {
+    private void LoadVisit(){
         try(XMLDecoder dec = new XMLDecoder(new FileInputStream(archiviazione.toString() + "/visita.crawly"))){
             dominio = (URI)dec.readObject();
             toLoadTemp = Arrays.asList((URI[]) dec.readObject());
@@ -404,15 +413,10 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             progression = Collections.synchronizedMap(new HashMap<>());
             Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progression.put(entry.getKey(), entry.getValue()));
         }
-        catch (IOException e) {
+        catch (FileNotFoundException e) {
             System.err.println("Loading visit: something went wrong, with file reading");
-            throw  new IOException();
         }
-        catch (RuntimeException e){
-            System.err.println("non ho potuto ricaricare la visita. Forse l'archivio è corrotto?");
-            //TODO handle permission denied. Discover which exception is launched at runtime in this case.
-            throw new VisitException(this, VisitException.VisitState.CORRUPTED);
-        }
+        catch (Exception e){ System.err.println("non ho potuto ricaricare la visita. Forse l'archivio è corrotto?");}
     }
 
     /**

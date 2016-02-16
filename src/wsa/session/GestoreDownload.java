@@ -117,6 +117,10 @@ public class GestoreDownload {
         toLaunch.start();
     }
 
+    public DataGate getDataStruct(){
+        return stato.getWorker().getData();
+    }
+
     /**
      * Modifica il rango inserito precedentemente.
      * @param m Il rango da modificare.
@@ -260,7 +264,7 @@ public class GestoreDownload {
      */
     private void recoverPageInfo(URI ur) {
         try {
-            Page pg = new Page(stato.getWorker().get(ur), this);
+            Page pg = new Page(stato.getWorker().get(ur));
             resultMap.putIfAbsent(ur, pg);
             updateMaxLinks(pg);
         } catch (Exception e) {

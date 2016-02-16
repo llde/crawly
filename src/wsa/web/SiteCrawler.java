@@ -1,5 +1,7 @@
 package wsa.web;
 
+import wsa.session.DataGate;
+
 import java.net.URI;
 import java.util.Optional;
 import java.util.Set;
@@ -44,6 +46,7 @@ public interface SiteCrawler {
      * @param uri  un URI */
     void addSeed(URI uri);
 
+    DataGate getData();
 
     /**
      * Risottomette e forza lo scaricamento dell'uri sia se è

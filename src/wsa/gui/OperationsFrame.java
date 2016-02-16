@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import wsa.API.Wrap;
 import wsa.elaborazioni.*;
 import wsa.exceptions.EventFrame;
+import wsa.session.DataGate;
 import wsa.session.GestoreDownload;
 import wsa.session.Page;
 
@@ -156,7 +157,7 @@ public class OperationsFrame {
             new EventFrame(event, Alert.AlertType.WARNING, "Questo calcolo richiede molto tempo,\n" +
                     "calcolerà le distanze tra tutte le coppie\n" +
                     "di pagine. Continuare?", ButtonType.CANCEL, ()->{
-                DistanzaCoppieFrame dst = new DistanzaCoppieFrame(comboVisita.getSelectionModel().getSelectedItem().getWorker());
+                DistanzaCoppieFrame dst = new DistanzaCoppieFrame(comboVisita.getSelectionModel().getSelectedItem().getWorker().getDataStruct());
                 dst.show();
                 dst.execute();
             });
@@ -290,7 +291,7 @@ public class OperationsFrame {
         /**
          * Genera una finestra, si occupa di dare gli argomenti per il Task
          */
-        public DistanzaCoppieFrame(GestoreDownload gd){
+        public DistanzaCoppieFrame(DataGate gd){
             super("Distanza per coppie", "Calcolo distanza tra \n" +
                     "tutte le coppie di pagine...");
             this.setComputeLabel("Calcolo computo...");
