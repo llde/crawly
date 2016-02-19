@@ -1,8 +1,7 @@
 package wsa.plugin.charts;
 
 import javafx.application.Platform;
-import javafx.beans.*;
-import javafx.beans.Observable;
+import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.Chart;
@@ -12,7 +11,10 @@ import wsa.API.Wrap;
 import wsa.session.Page;
 
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by gaamda on 19/02/16.
@@ -27,6 +29,8 @@ public class ModulePieChart extends ChartPlugin<URI> {
     private final PieChart pieChart = new PieChart();
     private final Wrap<String, Integer> module = new Wrap<>(Integer.class.toGenericString(), 5);
     private final Wrap<String, linksValue> links = new Wrap<>(linksValue.class.toGenericString(), linksValue.POINTER);
+    private final Wrap<String, Boolean> animated = new Wrap<>(Boolean.class.toGenericString(), false);
+    private final Wrap<String, Boolean> legend = new Wrap<>(Boolean.class.toGenericString(), true);
     private final ObservableList<Page> dataset;
 
     public ModulePieChart(@NonNull ObservableList<Page> dataset) {
@@ -34,9 +38,10 @@ public class ModulePieChart extends ChartPlugin<URI> {
         module.val.addListener(param -> this.calculate());
         super.properties.put("module", module);
         super.properties.put("linkvalue", links);
+        super.properties.put("legend", legend);
         this.dataset = dataset;
 
-        Platform.runLater(() -> pieChart.setAnimated(false));
+        Platform.runLater(() -> pieChart.setAnimated(animated.val.get()));
 
         dataset.addListener((InvalidationListener) observable -> {
             setChartData();
@@ -46,6 +51,12 @@ public class ModulePieChart extends ChartPlugin<URI> {
         });
         links.val.addListener(observable -> {
             setChartData();
+        });
+        animated.val.addListener(observable -> {
+            Platform.runLater(() -> pieChart.setAnimated(animated.val.get()));
+        });
+        legend.val.addListener(observable -> {
+            Platform.runLater(() -> pieChart.setLegendVisible(legend.val.get()));
         });
     }
 
@@ -66,7 +77,7 @@ public class ModulePieChart extends ChartPlugin<URI> {
     private ObservableList<PieChart.Data> createPieChartData(Map<Integer, Set<URI>> values){
         ObservableList<PieChart.Data> createdList = FXCollections.observableArrayList();
         values.forEach((k,v) -> {
-            createdList.add(new PieChart.Data("from " + k + " to " + ((k + module.val.get()) -1), v.size()));
+            createdList.add(new PieChart.Data("from " + module.val.get()*k + " to " + ((module.val.get()*k + module.val.get()) -1), v.size()));
         });
         return createdList;
     }

@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebView;
@@ -328,19 +329,30 @@ public class TabFrame extends Tab {
         System.out.println("Lanciato demone");
 
         // TESTING FOR CHARTS
+
         /*
         Platform.runLater(()-> {
                     Stage stg = new Stage();
                     try {
-                        stg.setScene(new Scene(new ModulePieChart(this.dg.getDataList()).getGraph()));
+                        ModulePieChart pc = new ModulePieChart(this.dg.getDataList());
+                        ModulePieChart pc2 = new ModulePieChart(this.dg.getDataList());
+                        VBox box = new VBox();
+                        box.getChildren().addAll(pc.getGraph(), pc2.getGraph());
+                        stg.setScene(new Scene(box));
                         stg.setAlwaysOnTop(true);
                         stg.show();
+                        pc.setSettings("linkvalue", ModulePieChart.linksValue.POINTER);
+                        pc.setSettings("legend", false);
+                        pc.setSettings("legend", 10); // <-- Will not work.
+                        pc2.setSettings("linkvalue", ModulePieChart.linksValue.POINTED);
+                        pc2.setSettings("legend", false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
         );
         */
+
     }
 
     /**
