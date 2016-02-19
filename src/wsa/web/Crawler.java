@@ -28,7 +28,6 @@ public interface Crawler {
      */
     void resubmit(URI uri);
 
-    void setData(DataGate dg);
 
     DataGate getData();
 

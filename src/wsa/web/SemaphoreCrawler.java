@@ -40,7 +40,6 @@ public class SemaphoreCrawler implements Crawler {
     private final Semaphore maxresinqueue = new Semaphore(50);    //numero massimo di sottomissioni al consumatore in coda
     private final ConditonSemaphore<AtomicReference<crawlerState>> runpause = new ConditonSemaphore<>((pauss) -> pauss.get().equals(crawlerState.SUSPENDED), stato, 2, false);   //Per la gestione della pausa, si assicurerà che produttore e consumatore lavorino solo quando i Crawler è in funzione.
     private final AtomicReference<AsyncLoader> async = new AtomicReference<>();    //AsyncLoader atomico per poter essere gestito dai thread concorrenti
-
     private Runnable prod = () ->{
         while(true){
             if(Thread.currentThread().isInterrupted()) return;
@@ -137,6 +136,7 @@ public class SemaphoreCrawler implements Crawler {
         if(errors != null) Errori.addAll(errors);
         if(pagelink != null) pageLink = pagelink;
         else pageLink = (ur) -> true;
+        this.dg = new DataGate();
     }
 
 
@@ -176,10 +176,6 @@ public class SemaphoreCrawler implements Crawler {
         if(stato.get() == crawlerState.TERMINATED_DOWNLOAD || stato.get() == crawlerState.TERMINATED) start();
     }
 
-    @Override
-    public void setData(DataGate dg) {
-        this.dg = dg;
-    }
 
     @Override
     public DataGate getData() {

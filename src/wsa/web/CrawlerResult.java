@@ -1,9 +1,12 @@
 package wsa.web;
 
+import lombok.Data;
+
 import java.net.URI;
 import java.util.List;
 
 /** Il risultato del tentativo di scaricare una pagina tramite un Crawler */
+@Data
 public class CrawlerResult {
     /** L'URI della pagina o null. Se null, significa che la prossima pagina
      * non è ancora pronta. */

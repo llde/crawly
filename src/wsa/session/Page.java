@@ -236,6 +236,10 @@ public class Page extends Observable{
         return false;
     }
 
+
+    public CrawlerResult toCralwerResult(){
+        return new CrawlerResult(uri, getPageLink(), links, errRawLinks, exc);
+    }
     /**
      * Per sapere come si usa l'hashcode nelle collections, riferirsi alla documentazione.
      * Questa pagina può tornare utile: https://en.wikipedia.org/wiki/Java_hashCode%28%29;

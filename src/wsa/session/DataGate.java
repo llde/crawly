@@ -40,11 +40,12 @@ public final class DataGate implements Observable{
 
     private List<InvalidationListener> listeners = new ArrayList<>(); /* Listeners */
 
+    //TODO è propro necessario tenersi sia le pagine sia i cralwer result? Forse per velocizzare il salvataggio?
+    //Per ora semplifico la struttura per il salvataggio.
     private final ObservableMap<URI, CrawlerResult> crawlerResultsTable = FXCollections.synchronizedObservableMap(
             FXCollections.observableHashMap()
     );
 
-    //TODO è propro necessario tenersi sia le pagine sia i cralwer result?
     private final ObservableMap<URI, Page> downloadedPageTable = FXCollections.synchronizedObservableMap(
             FXCollections.observableHashMap()
     );

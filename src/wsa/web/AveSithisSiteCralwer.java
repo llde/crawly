@@ -1,5 +1,7 @@
 package wsa.web;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
 import wsa.session.DataGate;
 
 import java.beans.XMLDecoder;
@@ -32,6 +34,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     private List<URI> toLoadTemp = null;
     private List<URI> LoadedTemp = null;
     private List<URI> errorsTemp = null;
+    private List<CrawlerResult> progressionTemp = null;
     private Thread site = null;
     private Thread exceptionSave = null;
     private DataGate dataStruct = null;
@@ -54,7 +57,14 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         }
     };
 
-
+    private ThreadLocal<Kryo> kryo = new ThreadLocal<Kryo>(){
+        @Override
+        protected Kryo initialValue() {
+            Kryo kryo = new Kryo();
+            // configure kryo instance, customize settings
+            return kryo;
+        };
+    };
 
     AveSithisSiteCralwer(URI dom, Path dir) throws IOException {
         if (dom == null && dir == null) throw new IllegalArgumentException("Non posso creare un SiteCrawler con questi paramentri");
@@ -85,9 +95,8 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             dominio = dom;
             archiviazione = dir;   //Controllare la presenza di un archivio già presente.
         }  //Caso visita con salvataggio
-//TODO this should be done inside Cralwer
-        this.dataStruct = new DataGate(); /* Creating new datagate */
-        this.crawl.get().setData(dataStruct); /* Setting the datagate */
+        this.dataStruct = this.crawl.get().getData(); /* Getting datagate */
+        if(progressionTemp != null) progressionTemp.forEach((xx) -> this.dataStruct.add(xx)); //Se sto recuperando la visita popolo il DataGate
     }
 
     /**
@@ -299,17 +308,15 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     private synchronized void SaveVisit(){
         try {
             //TODO need to be totally redone.
-            XMLEncoder enc = new XMLEncoder(new FileOutputStream(archiviazione.toString() + "/visita.crawly"));
-            enc.writeObject(dominio);
-            enc.writeObject(getToLoad().toArray(new URI[getToLoad().size()]));
-            enc.writeObject(getLoaded().toArray(new URI[getLoaded().size()]));
-            enc.writeObject(getErrors().toArray(new URI[getErrors().size()]));
-            List<SaveEntry<URI, CrawlerResult>>  appoggio = new ArrayList<>();
-   //         progressione.entrySet().forEach((entry)->appoggio.add(new SaveEntry<>(entry)));
-            enc.writeObject(appoggio.toArray(new SaveEntry[appoggio.size()]));
-            appoggio.clear();
-  //          progression.entrySet().forEach((entry) -> appoggio.add(new SaveEntry<>(entry)));
-            enc.writeObject(appoggio.toArray(new SaveEntry[appoggio.size()]));
+            Output enc = new Output(new FileOutputStream(archiviazione.toString() + "/visita.crawly"));
+            Kryo kry = kryo.get();
+            kry.writeObject(enc, dominio);
+            kry.writeObject(enc, getToLoad());
+            kry.writeObject(enc, getLoaded());
+            kry.writeObject(enc, getErrors());
+            List<CrawlerResult> cress = new ArrayList<>();
+            this.dataStruct.getDataList().forEach(page -> cress.add(page.toCralwerResult()));
+            kry.writeObject(enc, cress);
             enc.close();
             System.out.println("Visita salvata");
         } catch (FileNotFoundException ignored) {System.err.println("Saving visit: something went wrong, with file writing");}
@@ -326,10 +333,9 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             toLoadTemp = Arrays.asList((URI[]) dec.readObject());
             LoadedTemp = Arrays.asList((URI[]) dec.readObject());
             errorsTemp = Arrays.asList((URI[]) dec.readObject());
-//            progressione = Collections.synchronizedNavigableMap(new TreeMap<>());
- //           Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progressione.put(entry.getKey(), entry.getValue()));
- //           progression = Collections.synchronizedMap(new HashMap<>());
-  //          Stream.of((SaveEntry<URI,CrawlerResultBean>[])dec.readObject()).forEachOrdered((entry)->progression.put(entry.getKey(), entry.getValue()));
+            progressionTemp  = new ArrayList<>();
+            Arrays.stream((CrawlerResult[])dec.readObject()).forEach((cres) -> progressionTemp.add(cres));
+
         }
         catch (FileNotFoundException e) {
             System.err.println("Loading visit: something went wrong, with file reading");

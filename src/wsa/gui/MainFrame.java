@@ -68,7 +68,7 @@ public class MainFrame {
             if (tabBase.getTabs().isEmpty()){
                 ThreadUtilities.Dispose();
             }else {
-                new CloseFrame(a).start();
+                new CloseFrame(a);
             }
         });
     }
@@ -156,7 +156,7 @@ public class MainFrame {
     }
     private @FXML   MenuItem    menuChiudi;
     {
-        menuChiudi.setOnAction(a -> new CloseFrame(a).start());
+        menuChiudi.setOnAction(a -> new CloseFrame(a));
     }
     private @FXML   MenuItem    menuInformazioni;
     {
