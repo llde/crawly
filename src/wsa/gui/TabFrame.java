@@ -330,7 +330,7 @@ public class TabFrame extends Tab {
 
         // TESTING FOR CHARTS
 
-        /*
+
         Platform.runLater(()-> {
                     Stage stg = new Stage();
                     try {
@@ -351,7 +351,6 @@ public class TabFrame extends Tab {
                     }
                 }
         );
-        */
 
     }
 
