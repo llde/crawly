@@ -35,27 +35,30 @@ import java.util.stream.Collectors;
  */
 public final class DataGate implements Observable{
 
+    // Executor for multi-threading operations.
     private ExecutorService executor = ThreadUtilities.TrackExecutorService(
             Executors.newFixedThreadPool(30)
     );
 
+    // Listeners of this data structure.
     private List<InvalidationListener> listeners = new ArrayList<>(); /* Listeners */
 
+    // Page table. Actually contains downloaded pages.
     private final ObservableMap<URI, Page> downloadedPageTable = FXCollections.synchronizedObservableMap(
             FXCollections.observableHashMap()
     );
 
+    // List of pages, reflect the table.
     private final ObservableList<Page> pageList = FXCollections.synchronizedObservableList(
             FXCollections.observableArrayList()
     );
 
+    // Map of errors.
     private final ObservableMap<URI, List<String>> errorsLogs = FXCollections.synchronizedObservableMap(
             FXCollections.observableHashMap()
     );
 
-    /*
-    Set the verbose in the data structure.
-     */
+    // Set the verbose bit in the data structure.
     private boolean verbose = false;
 
 
@@ -105,6 +108,10 @@ public final class DataGate implements Observable{
 
     public ObservableList<Page> getDataList(){
         return this.pageList;
+    }
+
+    public ObservableMap<URI, List<String>> getErrorsLogs(){
+        return errorsLogs;
     }
 
     /**
