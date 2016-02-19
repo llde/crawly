@@ -13,6 +13,7 @@ import wsa.gui.ThreadUtilities;
 import wsa.web.CrawlerResult;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,12 +41,6 @@ public final class DataGate implements Observable{
 
     private List<InvalidationListener> listeners = new ArrayList<>(); /* Listeners */
 
-    //TODO è propro necessario tenersi sia le pagine sia i cralwer result? Forse per velocizzare il salvataggio?
-    //Per ora semplifico la struttura per il salvataggio.
-    private final ObservableMap<URI, CrawlerResult> crawlerResultsTable = FXCollections.synchronizedObservableMap(
-            FXCollections.observableHashMap()
-    );
-
     private final ObservableMap<URI, Page> downloadedPageTable = FXCollections.synchronizedObservableMap(
             FXCollections.observableHashMap()
     );
@@ -54,15 +49,31 @@ public final class DataGate implements Observable{
             FXCollections.observableArrayList()
     );
 
+    private final ObservableMap<URI, List<String>> errorsLogs = FXCollections.synchronizedObservableMap(
+            FXCollections.observableHashMap()
+    );
+
+    /*
+    Set the verbose in the data structure.
+     */
+    private boolean verbose = false;
 
 
+    /**
+     * Constructor
+     */
     public DataGate(){
-        crawlerResultsTable.addListener((MapChangeListener<URI, CrawlerResult>) change -> {
-            executor.submit(() -> createPage(change.getValueAdded()));
-        });
         downloadedPageTable.addListener((MapChangeListener<URI, Page>) change -> {
             executor.submit(() -> updateLinks(change.getValueAdded()));
         });
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
     /**
@@ -124,8 +135,15 @@ public final class DataGate implements Observable{
     @Synchronized
     public void add(CrawlerResult cres){
         if (cres == null || cres.uri == null) return;
-        crawlerResultsTable.put(cres.uri, cres);
-        notifyListeners();
+        executor.submit(() -> {
+            try {
+                Page p = createPage(cres);
+                downloadedPageTable.put(cres.uri, p); /* Using cres uri for warnings */
+                notifyListeners();
+            }catch (Exception ex){
+                error(cres.uri, "Page creation failed", verbose);
+            }
+        });
     }
 
     @Synchronized
@@ -144,7 +162,7 @@ public final class DataGate implements Observable{
     @Synchronized
     public void addIfNotPresent(CrawlerResult cres){
         if (cres == null || cres.uri == null) return;
-        if (crawlerResultsTable.containsKey(cres.uri)) return;
+        if (downloadedPageTable.containsKey(cres.uri)) return;
         add(cres);
     }
 
@@ -155,7 +173,7 @@ public final class DataGate implements Observable{
      */
     @Synchronized
     public boolean checkConsinstecy(){
-        return crawlerResultsTable.keySet().equals(downloadedPageTable.keySet());
+        return downloadedPageTable.size() == pageList.size();
     }
 
     /**
@@ -211,6 +229,19 @@ public final class DataGate implements Observable{
 
         Collection<Page> pages = downloadedPageTable.values(); /* Collect all the pages. */
         pages.stream().filter(page -> keys.contains(page.getURI())).forEach(pageNeu -> pageNeu.update(pg)); /* Update */
+    }
+
+    private void error (URI cresURI, String cause, boolean notify){
+        List<String> errors = new ArrayList<>();
+        errors.add(Date.from(Instant.now()).toString() + " @ " + cause);
+        if (errorsLogs.keySet().contains(cresURI)){
+            errorsLogs.get(cresURI).addAll(errors);
+        }else{
+            errorsLogs.put(cresURI, errors);
+        }
+        if (notify){
+            System.out.println("[DG] Errors for uri: " + cresURI + " -- Log created.");
+        }
     }
 
 }
