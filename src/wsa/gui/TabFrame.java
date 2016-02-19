@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import wsa.API.Wrap;
 import wsa.Settings;
 import wsa.exceptions.EventFrame;
+import wsa.plugin.charts.ModulePieChart;
 import wsa.session.*;
 
 import java.io.IOException;
@@ -133,6 +134,8 @@ public class TabFrame extends Tab {
 
             this.tableData.setItems(gd.getDataStruct().getDataList());  // Inizializza items tabella.
 
+            this.dg = gd.getDataStruct();
+
         /*
         Inizializza le label per le statistiche, inoltre aggiunge un invalidation listner per
         aggiornarle.
@@ -193,6 +196,7 @@ public class TabFrame extends Tab {
                 if (gd != null)
                     gd.getUscentiPieData().forEach(data -> exitWrapList.add(new Wrap<>(data.getName(), (int) data.getPieValue())));
             });
+
             if (run) this.run(); /* Avvia la visita se true */
         });
         t.start();
@@ -322,6 +326,21 @@ public class TabFrame extends Tab {
         laucher.setName("Thread di visita");
         laucher.start();
         System.out.println("Lanciato demone");
+
+        // TESTING FOR CHARTS
+        /*
+        Platform.runLater(()-> {
+                    Stage stg = new Stage();
+                    try {
+                        stg.setScene(new Scene(new ModulePieChart(this.dg.getDataList()).getGraph()));
+                        stg.setAlwaysOnTop(true);
+                        stg.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+        */
     }
 
     /**

@@ -64,7 +64,7 @@ public class ModulePieChart extends ChartPlugin<URI> {
     }
 
     private ObservableList<PieChart.Data> createPieChartData(Map<Integer, Set<URI>> values){
-        ObservableList<PieChart.Data> createdList = FXCollections.emptyObservableList();
+        ObservableList<PieChart.Data> createdList = FXCollections.observableArrayList();
         values.forEach((k,v) -> {
             createdList.add(new PieChart.Data("from " + k + " to " + ((k + module.val.get()) -1), v.size()));
         });

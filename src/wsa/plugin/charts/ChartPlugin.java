@@ -42,7 +42,6 @@ public abstract class ChartPlugin<T> implements Plugin {
      * Return a list of data hold by the chart.
      * @return List of data.
      */
-    @Synchronized
     public abstract ObservableList<T> getDatas();
 
     /**
