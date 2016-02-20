@@ -1,6 +1,7 @@
 package wsa.web;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import wsa.session.DataGate;
 
@@ -328,18 +329,20 @@ public class AveSithisSiteCralwer implements SiteCrawler {
      */
     @SuppressWarnings("unchecked")
     private void LoadVisit(){
-        try(XMLDecoder dec = new XMLDecoder(new FileInputStream(archiviazione.toString() + "/visita.crawly"))){
-            dominio = (URI)dec.readObject();
-            toLoadTemp = Arrays.asList((URI[]) dec.readObject());
-            LoadedTemp = Arrays.asList((URI[]) dec.readObject());
-            errorsTemp = Arrays.asList((URI[]) dec.readObject());
+        try(Input dec = new Input(new FileInputStream(archiviazione.toString() + "/visita.crawly"))){
+            Kryo kry = kryo.get();
+            dominio = kry.readObject(dec, URI.class);
+            toLoadTemp = Arrays.asList(kry.readObject(dec, URI[].class));
+            LoadedTemp = Arrays.asList(kry.readObject(dec, URI[].class));
+            errorsTemp = Arrays.asList(kry.readObject(dec, URI[].class));
             progressionTemp  = new ArrayList<>();
-            Arrays.stream((CrawlerResult[])dec.readObject()).forEach((cres) -> progressionTemp.add(cres));
+            Arrays.stream(kry.readObject(dec, CrawlerResult[].class)).forEach((cres) -> progressionTemp.add(cres));
 
         }
         catch (FileNotFoundException e) {
             System.err.println("Loading visit: something went wrong, with file reading");
         }
+        //TODO Rerise!
         catch (Exception e){ System.err.println("non ho potuto ricaricare la visita. Forse l'archivio è corrotto?");}
     }
 
