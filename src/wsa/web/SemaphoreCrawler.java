@@ -103,12 +103,12 @@ public class SemaphoreCrawler implements Crawler {
                                     cres = new CrawlerResult(mainuri, false, null, null, null);
                                 }
                                 Scaricati.add(mainuri);
-                                this.dg.add(cres); /* Commit to Data Structure */
                             }
                             else{
                                 cres = new CrawlerResult(mainuri, pageLink.test(mainuri), null,null,res.exc);
                                 Errori.add(mainuri);
                             }
+                            this.dg.add(cres); /* Commit to Data Structure */
                             progress.get().add(cres);
                             holder.remove(mainuri);
                         } catch (URISyntaxException e) {

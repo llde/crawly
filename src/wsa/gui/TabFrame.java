@@ -2,7 +2,6 @@ package wsa.gui;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -29,7 +27,6 @@ import wsa.exceptions.EventFrame;
 import wsa.plugin.charts.ModulePieChart;
 import wsa.session.*;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -47,7 +44,7 @@ public class TabFrame extends Tab {
     private Dominio dom;
     private Path path;
     private GestoreDownload gd;
-    private DataGate dg = null;
+    //private DataGate dg = null;
     private Scene rootScene;
 
 
@@ -135,7 +132,24 @@ public class TabFrame extends Tab {
 
             this.tableData.setItems(gd.getDataStruct().getDataList());  // Inizializza items tabella.
 
-            this.dg = gd.getDataStruct();
+            Platform.runLater(()-> { /* Default charts */
+                        try {
+                            ModulePieChart pc = new ModulePieChart(gd.getDataStruct().getDataList());
+                            ModulePieChart pc2 = new ModulePieChart(gd.getDataStruct().getDataList());
+                            pc.setSettings("linkvalue", ModulePieChart.linksValue.POINTER);
+                            pc.setSettings("legend", false);
+                            pc.setSettings("title", "Puntanti");
+
+                            pc2.setSettings("linkvalue", ModulePieChart.linksValue.POINTED);
+                            pc2.setSettings("legend", false);
+                            pc.setSettings("title", "Puntati");
+
+                            pluginBox.getChildren().addAll(pc.getGraph(), pc2.getGraph());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+            );
 
         /*
         Inizializza le label per le statistiche, inoltre aggiunge un invalidation listner per
@@ -182,8 +196,6 @@ public class TabFrame extends Tab {
         Setta i grafici di sessione.
         Setta anche dei changeListner per aggiornarli, usa dei Wrapper.
          */
-            this.pieEntranti.setData(gd.getEntrantiPieData());
-            this.pieUscenti.setData(gd.getUscentiPieData());
             this.entersTable.setItems(entersWrapList);
             this.exitTable.setItems(exitWrapList);
 
@@ -328,30 +340,6 @@ public class TabFrame extends Tab {
         laucher.start();
         System.out.println("Lanciato demone");
 
-        // TESTING FOR CHARTS
-
-
-        Platform.runLater(()-> {
-                    Stage stg = new Stage();
-                    try {
-                        ModulePieChart pc = new ModulePieChart(this.dg.getDataList());
-                        ModulePieChart pc2 = new ModulePieChart(this.dg.getDataList());
-                        VBox box = new VBox();
-                        box.getChildren().addAll(pc.getGraph(), pc2.getGraph());
-                        stg.setScene(new Scene(box));
-                        stg.setAlwaysOnTop(true);
-                        stg.show();
-                        pc.setSettings("linkvalue", ModulePieChart.linksValue.POINTER);
-                        pc.setSettings("legend", false);
-                        pc.setSettings("legend", 10); // <-- Will not work.
-                        pc2.setSettings("linkvalue", ModulePieChart.linksValue.POINTED);
-                        pc2.setSettings("legend", false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-        );
-
     }
 
     /**
@@ -459,28 +447,9 @@ public class TabFrame extends Tab {
 
     ////////////////////////////////////////////////////////////////////////////////////// FXML declarations
 
-    private @FXML   PieChart        pieEntranti;
-    {
-        pieEntranti.setLegendVisible(false);
-        pieEntranti.setLabelsVisible(false);
-        pieEntranti.setAnimated(false);
-        pieEntranti.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2){
-                entST.show();
-            }
-        });
-    }
-    private @FXML   PieChart        pieUscenti;
-    {
-        pieUscenti.setLegendVisible(false);
-        pieUscenti.setLabelsVisible(false);
-        pieUscenti.setAnimated(false);
-        pieUscenti.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2){
-                exitST.show();
-            }
-        });
-    }
+    private @FXML ScrollPane pluginScrollPane;
+    private @FXML VBox pluginBox;
+
     private @FXML   ToolBar         toolbarTab;
     private @FXML   TableView<Page> tableData;
     private @FXML TableColumn<Page, URI> domColumn;

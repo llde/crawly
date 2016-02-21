@@ -14,13 +14,11 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import lombok.NonNull;
 import wsa.API.Wrap;
+import wsa.gui.ThreadUtilities;
 import wsa.session.Page;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by gaamda on 19/02/16.
@@ -41,6 +39,9 @@ public class ModulePieChart extends ChartPlugin<URI> {
     private final Wrap<String, Boolean> animated = new Wrap<>(Boolean.class.toGenericString(), false);
     private final Wrap<String, Boolean> legend = new Wrap<>(Boolean.class.toGenericString(), true);
     private final Wrap<String, Boolean> alwaysOnTop = new Wrap<>(Boolean.class.toGenericString(), true);
+    private final Wrap<String, String> title = new Wrap<>(String.class.toGenericString(), "null");
+    private final Wrap<String, Boolean> label = new Wrap<>(Boolean.class.toGenericString(), false);
+
 
     public ModulePieChart(@NonNull ObservableList<Page> dataset) {
         super(new HashMap<>(), dataset);
@@ -49,12 +50,17 @@ public class ModulePieChart extends ChartPlugin<URI> {
         super.properties.put("linkvalue", links);
         super.properties.put("legend", legend);
         super.properties.put("alwaysontop", alwaysOnTop); // Affect newly created window
+        super.properties.put("title", title);
+        super.properties.put("label", label);
         this.dataset = dataset;
 
-        Platform.runLater(() -> pieChart.setAnimated(animated.val.get()));
+        Platform.runLater(() -> {
+            pieChart.setAnimated(animated.val.get());
+            pieChart.setLabelsVisible(label.val.get());
+        });
 
         dataset.addListener((InvalidationListener) observable -> {
-            setChartData();
+            ThreadUtilities.CreateThread(this::setChartData).start();
         });
         pieChart.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2){
@@ -74,6 +80,16 @@ public class ModulePieChart extends ChartPlugin<URI> {
         legend.val.addListener(observable -> {
             Platform.runLater(() -> pieChart.setLegendVisible(legend.val.get()));
         });
+        title.val.addListener(observable -> {
+            if (title.val.get().toLowerCase().equals("null")){
+                Platform.runLater(() -> pieChart.setTitle(""));
+            }else{
+                Platform.runLater(() -> pieChart.setTitle(title.val.get()));
+            }
+        });
+        label.val.addListener(observable -> {
+            Platform.runLater(() -> pieChart.setLabelsVisible(label.val.get()));
+        });
     }
 
     @Override
@@ -87,9 +103,10 @@ public class ModulePieChart extends ChartPlugin<URI> {
     }
 
     private void setChartData(){
+        ObservableList<PieChart.Data> listOfData = createPieChartData(calculate());
         Platform.runLater(() -> {
             pieChart.getData().clear();
-            pieChart.getData().addAll(createPieChartData(calculate()));
+            pieChart.getData().addAll(listOfData);
         });
     }
 
@@ -103,7 +120,9 @@ public class ModulePieChart extends ChartPlugin<URI> {
 
     private Map<Integer, Set<URI>> calculate(){
         Map<Integer, Set<URI>> values = new HashMap<>();
-        for (Page pg : this.dataset){
+        List<Page> dataset = new ArrayList<>();
+        dataset.addAll(this.dataset);
+        for (Page pg : dataset){
             int val = getURI(pg, links.val.get()).size() / module.val.get();
             if (values.containsKey(val)){
                 values.get(val).add(pg.getURI());

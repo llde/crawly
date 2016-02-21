@@ -180,7 +180,6 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     @Override
     public void suspend() {
         throwIfCancelled();
-        System.out.println(state.get());
         if(state.get() != SiteCrawlerState.RUNNING  || state.get() != SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE) return;
         state.set(SiteCrawlerState.SUSPENDED);
         crawl.get().suspend();
@@ -190,7 +189,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
             exceptionSave = new Thread(exceptionalsave);
             exceptionSave.start();
         }
-
+        System.out.println(state.get());
     }
 
     /**
