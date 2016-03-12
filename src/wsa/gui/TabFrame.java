@@ -123,9 +123,9 @@ public class TabFrame extends Tab {
             try {
                 this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
             } catch (Exception e) {
-                new EventFrame(e, null);
+                Platform.runLater(() -> new EventFrame(e, null));
                 Platform.runLater(()-> this.setText("Preparazione visita fallita"));
-                //TODO notify the users about IOExceptions.
+                return;
             }
             if(dominio == null) this.dom = Dominio.getDomainSneaky(gd.getDomain().toString());
             Platform.runLater(() -> this.setText(dom != null ? dom.toString() : "Unknow dom"));

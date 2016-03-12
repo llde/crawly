@@ -3,6 +3,7 @@ package wsa.web;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import wsa.exceptions.VisitException;
 import wsa.session.DataGate;
 
 import java.beans.XMLDecoder;
@@ -67,7 +68,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         };
     };
 
-    AveSithisSiteCralwer(URI dom, Path dir) throws IOException {
+    AveSithisSiteCralwer(URI dom, Path dir) throws IOException, VisitException {
         if (dom == null && dir == null) throw new IllegalArgumentException("Non posso creare un SiteCrawler con questi paramentri");
         if(dom != null) if(!SiteCrawler.checkDomain(dom))  throw new IllegalArgumentException("Devi passarmi un dominio valido!!!");
         if (dom == null) {
@@ -327,7 +328,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
      * Permette il recupero della visita
      */
     @SuppressWarnings("unchecked")
-    private void LoadVisit(){
+    private void LoadVisit() throws VisitException {
         try(Input dec = new Input(new FileInputStream(archiviazione.toString() + "/visita.crawly"))){
             Kryo kry = kryo.get();
             dominio = kry.readObject(dec, URI.class);
@@ -339,10 +340,8 @@ public class AveSithisSiteCralwer implements SiteCrawler {
 
         }
         catch (FileNotFoundException e) {
-            System.err.println("Loading visit: something went wrong, with file reading");
-        }
-        //TODO Rerise!
-        catch (Exception e){ System.err.println("non ho potuto ricaricare la visita. Forse l'archivio è corrotto?");}
+            throw new VisitException(this, VisitException.VisitState.NOT_RECOGNIZABLE);        }
+        catch (Exception e){ throw new VisitException(this, VisitException.VisitState.CORRUPTED);}
     }
 
     /**

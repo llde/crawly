@@ -12,7 +12,7 @@ public class Constants {
 
     public enum grabberMillis {veloce, medio, lento}
     public static final String APPLICATION_NAME = "Crawly";
-    public static final String APPLICATION_VERSION = "1.01 WIP";
+    public static final String APPLICATION_VERSION = "2.00 WIP";
 
     public static final String ERROR_GUIERROR = "Un errore nella generazione della GUI\n" +
             "impedisce il corretto funzionamento di " + APPLICATION_NAME + ".\n" +
@@ -44,7 +44,8 @@ public class Constants {
             "Ma che te lo dico a fare?!",
             "The JVM said me \"NO\"",
             "Non userò LWJGL come minecraft,\n" +
-                    "giuro su ogni mio bit!"
+                    "giuro su ogni mio bit!",
+            "Ave Sithis!"
     };
 
     private static int previousChoice = 0;
