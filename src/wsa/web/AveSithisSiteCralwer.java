@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -332,11 +333,11 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         try(Input dec = new Input(new FileInputStream(archiviazione.toString() + "/visita.crawly"))){
             Kryo kry = kryo.get();
             dominio = kry.readObject(dec, URI.class);
-            toLoadTemp = Arrays.asList(kry.readObject(dec, URI[].class));
-            LoadedTemp = Arrays.asList(kry.readObject(dec, URI[].class));
-            errorsTemp = Arrays.asList(kry.readObject(dec, URI[].class));
+            toLoadTemp = kry.readObject(dec, List.class);
+            LoadedTemp = kry.readObject(dec, List.class);
+            errorsTemp = kry.readObject(dec, List.class);
             progressionTemp  = new ArrayList<>();
-            Arrays.stream(kry.readObject(dec, CrawlerResult[].class)).forEach((cres) -> progressionTemp.add(cres));
+            kry.readObject(dec, ArrayList.class).forEach((cres) -> progressionTemp.add((CrawlerResult)cres));
 
         }
         catch (FileNotFoundException e) {
