@@ -2,6 +2,7 @@ package wsa.gui;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,11 +12,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebView;
@@ -24,9 +25,9 @@ import javafx.stage.Stage;
 import wsa.API.Wrap;
 import wsa.Settings;
 import wsa.exceptions.EventFrame;
-import wsa.plugin.charts.ModulePieChart;
 import wsa.session.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -44,7 +45,7 @@ public class TabFrame extends Tab {
     private Dominio dom;
     private Path path;
     private GestoreDownload gd;
-    //private DataGate dg = null;
+    private DataGate dg = null;
     private Scene rootScene;
 
 
@@ -123,33 +124,15 @@ public class TabFrame extends Tab {
             try {
                 this.gd = new GestoreDownload(dominio, s, path, m, this);  // Inizializza gestore.
             } catch (Exception e) {
-                Platform.runLater(() -> new EventFrame(e, null));
+                Platform.runLater(()-> new EventFrame(e, null));
                 Platform.runLater(()-> this.setText("Preparazione visita fallita"));
                 return;
+                //TODO notify the users about IOExceptions.
             }
             if(dominio == null) this.dom = Dominio.getDomainSneaky(gd.getDomain().toString());
             Platform.runLater(() -> this.setText(dom != null ? dom.toString() : "Unknow dom"));
 
             this.tableData.setItems(gd.getDataStruct().getDataList());  // Inizializza items tabella.
-
-            Platform.runLater(()-> { /* Default charts */
-                        try {
-                            ModulePieChart pc = new ModulePieChart(gd.getDataStruct().getDataList());
-                            ModulePieChart pc2 = new ModulePieChart(gd.getDataStruct().getDataList());
-                            pc.setSettings("linkvalue", ModulePieChart.linksValue.POINTER);
-                            pc.setSettings("legend", false);
-                            pc.setSettings("title", "Puntanti");
-
-                            pc2.setSettings("linkvalue", ModulePieChart.linksValue.POINTED);
-                            pc2.setSettings("legend", false);
-                            pc.setSettings("title", "Puntati");
-
-                            pluginBox.getChildren().addAll(pc.getGraph(), pc2.getGraph());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-            );
 
         /*
         Inizializza le label per le statistiche, inoltre aggiunge un invalidation listner per
@@ -196,6 +179,8 @@ public class TabFrame extends Tab {
         Setta i grafici di sessione.
         Setta anche dei changeListner per aggiornarli, usa dei Wrapper.
          */
+            this.pieEntranti.setData(gd.getEntrantiPieData());
+            this.pieUscenti.setData(gd.getUscentiPieData());
             this.entersTable.setItems(entersWrapList);
             this.exitTable.setItems(exitWrapList);
 
@@ -209,7 +194,6 @@ public class TabFrame extends Tab {
                 if (gd != null)
                     gd.getUscentiPieData().forEach(data -> exitWrapList.add(new Wrap<>(data.getName(), (int) data.getPieValue())));
             });
-
             if (run) this.run(); /* Avvia la visita se true */
         });
         t.start();
@@ -339,7 +323,6 @@ public class TabFrame extends Tab {
         laucher.setName("Thread di visita");
         laucher.start();
         System.out.println("Lanciato demone");
-
     }
 
     /**
@@ -447,9 +430,28 @@ public class TabFrame extends Tab {
 
     ////////////////////////////////////////////////////////////////////////////////////// FXML declarations
 
-    private @FXML ScrollPane pluginScrollPane;
-    private @FXML VBox pluginBox;
-
+    private @FXML   PieChart        pieEntranti;
+    {
+        pieEntranti.setLegendVisible(false);
+        pieEntranti.setLabelsVisible(false);
+        pieEntranti.setAnimated(false);
+        pieEntranti.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2){
+                entST.show();
+            }
+        });
+    }
+    private @FXML   PieChart        pieUscenti;
+    {
+        pieUscenti.setLegendVisible(false);
+        pieUscenti.setLabelsVisible(false);
+        pieUscenti.setAnimated(false);
+        pieUscenti.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2){
+                exitST.show();
+            }
+        });
+    }
     private @FXML   ToolBar         toolbarTab;
     private @FXML   TableView<Page> tableData;
     private @FXML TableColumn<Page, URI> domColumn;

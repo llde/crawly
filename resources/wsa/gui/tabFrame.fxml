@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <TableView fx:id="tableData" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <columns>
@@ -18,11 +18,22 @@
          </columns></TableView>
    </center>
    <right>
-      <ScrollPane fx:id="pluginScrollPane" BorderPane.alignment="CENTER">
-         <content>
-            <VBox fx:id="pluginBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" />
-         </content>
-      </ScrollPane>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Link entranti" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <PieChart fx:id="pieEntranti" />
+            <Label text="Link uscenti" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <PieChart fx:id="pieUscenti" />
+         </children>
+      </VBox>
    </right>
    <top>
       <ToolBar fx:id="toolbarBar" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">

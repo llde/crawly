@@ -40,7 +40,6 @@ public class SemaphoreCrawler implements Crawler {
     private final Semaphore maxresinqueue = new Semaphore(50);    //numero massimo di sottomissioni al consumatore in coda
     private final ConditonSemaphore<AtomicReference<crawlerState>> runpause = new ConditonSemaphore<>((pauss) -> pauss.get().equals(crawlerState.SUSPENDED), stato, 2, false);   //Per la gestione della pausa, si assicurerà che produttore e consumatore lavorino solo quando i Crawler è in funzione.
     private final AtomicReference<AsyncLoader> async = new AtomicReference<>();    //AsyncLoader atomico per poter essere gestito dai thread concorrenti
-
     private Runnable prod = () ->{
         while(true){
             if(Thread.currentThread().isInterrupted()) return;
@@ -103,12 +102,12 @@ public class SemaphoreCrawler implements Crawler {
                                     cres = new CrawlerResult(mainuri, false, null, null, null);
                                 }
                                 Scaricati.add(mainuri);
+                                this.dg.add(cres); /* Commit to Data Structure */
                             }
                             else{
                                 cres = new CrawlerResult(mainuri, pageLink.test(mainuri), null,null,res.exc);
                                 Errori.add(mainuri);
                             }
-                            this.dg.add(cres); /* Commit to Data Structure */
                             progress.get().add(cres);
                             holder.remove(mainuri);
                         } catch (URISyntaxException e) {

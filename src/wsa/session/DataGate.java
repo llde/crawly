@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 public final class DataGate implements Observable{
 
     // Executor for multi-threading operations.
+    //TODO possible bug here.
     private ExecutorService executor = ThreadUtilities.TrackExecutorService(
             Executors.newFixedThreadPool(30)
     );

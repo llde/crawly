@@ -224,7 +224,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     public CrawlerResult get(URI uri) {
         throwIfCancelled();
         if(!getErrors().contains(uri) && !getLoaded().contains(uri)) throw new IllegalArgumentException("Non ho scaricato questo uri");
-      //  if(progression.containsKey(uri)) return progression.get(uri).getCrawlerResult();
+        //  if(progression.containsKey(uri)) return progression.get(uri).getCrawlerResult();
        /* else */ throw new IllegalArgumentException("Ho scaricato l'URI ma ancora non appartiene all' Ave Sithis Site Crawler.");
     }
 
