@@ -131,7 +131,7 @@ public class GestoreDownload {
      * @return Il set degli uri puntanti.
      */
     public Set<URI> getPuntanti(URI uri){
-        return this.dataset.getPuntanti(uri);
+        return this.getDataStruct().getPuntanti(uri);
     }
 
     /**
@@ -140,7 +140,7 @@ public class GestoreDownload {
      * @return Il set degli uri puntati.
      */
     public Set<URI> getPuntati(URI uri){
-        return this.dataset.getPuntati(uri);
+        return this.getDataStruct().getPuntati(uri);
     }
 
     /**
@@ -164,7 +164,7 @@ public class GestoreDownload {
      * @return La lista osservabile con tutto il necessario per un grafico.
      */
     public ObservableList<PieChart.Data> getEntrantiPieData() {
-        return this.dataset.getEntrantiPieData();
+        return this.getDataStruct().getEntrantiPieData();
     }
 
     /**
@@ -172,7 +172,7 @@ public class GestoreDownload {
      * @return La lista osservabile con tutto il necessario per un grafico.
      */
     public ObservableList<PieChart.Data> getUscentiPieData() {
-        return this.dataset.getUscentiPieData();
+        return this.getDataStruct().getUscentiPieData();
     }
 
     /**
