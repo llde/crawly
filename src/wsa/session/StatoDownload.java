@@ -1,6 +1,7 @@
 package wsa.session;
 
 import javafx.concurrent.Worker;
+import lombok.Synchronized;
 import wsa.web.SiteCrawler;
 
 /**
@@ -35,7 +36,8 @@ class StatoDownload {
         return Worker.State.FAILED;
     }
 
-    public synchronized SiteCrawler getWorker(){
+    @Synchronized
+    public SiteCrawler getWorker(){
         return this.siteCrawler;
     }
 

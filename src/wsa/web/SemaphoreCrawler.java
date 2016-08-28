@@ -33,7 +33,6 @@ public class SemaphoreCrawler implements Crawler {
     /* Un buffer per domarli, un buffer per trovarli
         un buffer per ghermirli e nel buio incatenarli
      */
-    private final AtomicReference<Queue<CrawlerResult>> progress = new AtomicReference<>(new ConcurrentLinkedQueue<>());  //La coda dei CrawlerResult da Gettare
     private Queue<Future<LoadResult>>  buffer = new ConcurrentLinkedQueue<>();  //La coda dei future dei LoadResult sotoomessi
     private Set<URI> holder = new ConcurrentSkipListSet<>(); //Necessario nel caso in cui il produttore inizi un secondo giro, ed abbia tra gli Scaricare un URI già sottomesso ma non ancora processato dal produttore e quindi non ancora aggiunto a Scaricati, evita che venga sottomesso nuovamente.
     private Predicate<URI> pageLink;  //Il predicato per l'approvazione degli uri
@@ -108,7 +107,6 @@ public class SemaphoreCrawler implements Crawler {
                                 Errori.add(mainuri);
                             }
                             this.dg.add(cres); /* Commit to Data Structure */
-                            progress.get().add(cres);
                             holder.remove(mainuri);
                         } catch (URISyntaxException e) {
                             e.printStackTrace();
