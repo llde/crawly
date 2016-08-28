@@ -5,6 +5,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import wsa.exceptions.VisitException;
 import wsa.session.DataGate;
+import wsa.session.Page;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -224,8 +225,8 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     public CrawlerResult get(URI uri) {
         throwIfCancelled();
         if(!getErrors().contains(uri) && !getLoaded().contains(uri)) throw new IllegalArgumentException("Non ho scaricato questo uri");
-        //  if(progression.containsKey(uri)) return progression.get(uri).getCrawlerResult();
-       /* else */ throw new IllegalArgumentException("Ho scaricato l'URI ma ancora non appartiene all' Ave Sithis Site Crawler.");
+        Optional<Page> pag = dataStruct.getPage(uri);
+        return pag.orElseThrow(()-> new IllegalArgumentException()).toCralwerResult();
     }
 
     /**

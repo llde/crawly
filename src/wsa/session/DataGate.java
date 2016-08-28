@@ -125,6 +125,12 @@ public final class DataGate implements Observable {
         return this.pageList;
     }
 
+    @Synchronized
+    public Optional<Page> getPage(URI uri){
+        if(downloadedPageTable.containsKey(uri)) return Optional.of(downloadedPageTable[uri]);
+        return Optional.empty();
+    }
+
     public ObservableMap<URI, List<String>> getErrorsLogs() {
         return errorsLogs;
     }

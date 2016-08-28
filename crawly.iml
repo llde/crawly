@@ -16,5 +16,6 @@
     <orderEntry type="library" exported="" name="org.projectlombok:lombok:1.16.10" level="project" />
     <orderEntry type="library" exported="" name="org.controlsfx:controlsfx:8.40.11" level="project" />
     <orderEntry type="library" exported="" name="com.esotericsoftware:kryo:4.0.0" level="project" />
+    <orderEntry type="library" exported="" name="javac8-oo-plugin-0.5" level="project" />
   </component>
 </module>
