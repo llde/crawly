@@ -391,6 +391,21 @@ public final class DataGate implements Observable {
     }
 
     /**
+     * Setta il rango per i grafici di sessione ed esegue in modo asincrono l'aggiornamento della mappa
+     * dei risultati.
+     * In poche parole, settato il nuovo rango ripartiziona tutte le pagine scaricate nelle mappe (entranti,uscenti,ecc.) in base ad esso.
+     * @param m Il nuovo rango.
+     */
+    protected void setRango(Integer m) {
+        if (m > 1 && !Objects.equals(m, this.rank)) {
+            this.rank = m;
+            entranti.clear();
+            uscenti.clear();
+            executor.submit(() -> downloadedPageTable.values().stream().forEach(this::updatePieData));
+        }
+    }
+
+    /**
      * Genera i dati relativi alle liste per i grafici di entranti e uscenti.
      * Aggiorna le mappe usate dai grafici a torta usando le mappe degli degli entranti e degli uscenti.
      * @param dataList La datalist di PieChart.Data da aggiornare.

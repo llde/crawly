@@ -58,8 +58,6 @@ public class GestoreDownload {
         });
     }
 
-    private GestoreDati dataset = null;          // TEST
-
     /**
      * Crea un gestore dei download.
      * @param d Un dominio dom.
@@ -70,7 +68,6 @@ public class GestoreDownload {
     public GestoreDownload(Dominio d, List<Seed> s, Path p, Integer m, TabFrame tb) throws IOException, VisitException {
         this.seeds = (s == null? new ArrayList<>() : s);
         this.path = p;
-        this.dataset = new GestoreDati(resultMap, m);
         this.mytab = tb;
         stato = new StatoDownload(WebFactory.getSiteCrawler(d == null ? null : d.getURI(), path));
         this.dom = Dominio.getDomainSneaky(stato.getWorker().getDomain().toString());
@@ -122,7 +119,7 @@ public class GestoreDownload {
      * @param m Il rango da modificare.
      */
     public void setRango(Integer m){
-        this.dataset.setRango(m);
+        this.getDataStruct().setRango(m);
     }
 
     /**
@@ -148,7 +145,7 @@ public class GestoreDownload {
      * @return La mappa osservabile con tutto il necessario per un istogramma.
      */
     public ObservableMap<Integer, Set<URI>> getClassifiedEntranti(){
-        return this.dataset.getClassifiedEntranti();
+        return this.getDataStruct().getClassifiedEntranti();
     }
 
     /**
@@ -156,7 +153,7 @@ public class GestoreDownload {
      * @return La mappa osservabile con tutto il necessario per un istogramma.
      */
     public ObservableMap<Integer, Set<URI>> getClassifiedUscenti(){
-        return this.dataset.getClassifiedUscenti();
+        return this.getDataStruct().getClassifiedUscenti();
     }
 
     /**

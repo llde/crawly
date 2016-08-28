@@ -75,7 +75,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         if (dom == null) {
             Path file = Paths.get(dir.toString(), "visita.crawly");
             System.out.println(file);
-            if(!dir.toFile().isDirectory() || !file.toFile().exists()) throw new IllegalArgumentException("Non è un archivio di visita di questo SiteCralwer");
+            if(!dir.toFile().isDirectory() || !file.toFile().exists()) throw new VisitException(this, VisitException.VisitState.NOT_RECOGNIZABLE);
             System.out.println("Visita in ripresa");
             mode = SiteCrawlerMode.LOAD_EXPLORATION_SAVE;
             state.set(SiteCrawlerState.INIT);

@@ -1,6 +1,7 @@
 package wsa.gui;
 
 import javafx.application.Platform;
+import wsa.elaborazioni.Executor;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class ThreadUtilities {
 
     //Questa lista contiene tutti i thread creati con createThread() NON garbage collected.
     private static List<WeakReference<Thread>> threadlist = new ArrayList<>();
-    private static ExecutorService globalExecutor = null;
+    private static List<WeakReference<ExecutorService>> executorList = new ArrayList<>();
     /**
      * Questo metodo statico serve per creare un thread dato uno specifico Runnable
      * e di tracciarlo per la chiusura. Non fa partire il thread.
@@ -38,7 +39,7 @@ public class ThreadUtilities {
      * @return l'ExecutorService tracciato
      */
     public synchronized static ExecutorService TrackExecutorService(ExecutorService exs){
-        globalExecutor = exs;
+        executorList.add(new WeakReference<ExecutorService>(exs));
         return exs;
     }
 
@@ -67,7 +68,9 @@ public class ThreadUtilities {
             if(t.get().isDaemon() || !t.get().isAlive()) continue;
             t.get().interrupt();
         }
-        if(globalExecutor != null)globalExecutor.shutdownNow();
+        for(WeakReference<ExecutorService> ttt : executorList){
+            if(ttt.get() != null) ttt.get().shutdownNow();
+        }
         Platform.exit();
        // System.exit(0);
     }
