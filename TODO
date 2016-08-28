@@ -65,6 +65,9 @@ Notify IOExceptions to the users //Done
 Create NotAVisitException to better divide error cases. //Done
 
 Fix Maximum distance bug
+Pause doesn't seem to wok with DataGate
+
+DataGate doesn't clean resources properly when closing a visit.
 
 Chache
 
@@ -73,6 +76,8 @@ User Manual
 Recover visit: make the first downlaoded page as the first position
 
 Notifications.
+
+generify graphs
 
 Force a standard enumeration for cralwer and sitecralwer state + getState() methods
 

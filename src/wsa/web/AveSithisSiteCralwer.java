@@ -3,6 +3,8 @@ package wsa.web;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import lombok.Cleanup;
+import lombok.Synchronized;
 import wsa.exceptions.VisitException;
 import wsa.session.DataGate;
 import wsa.session.Page;
@@ -35,9 +37,9 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     private URI dominio = null;
     private Path archiviazione = null;
     private final int tempodisalavataggio = 10; //TODO settings
-    private List<URI> toLoadTemp = null;
-    private List<URI> LoadedTemp = null;
-    private List<URI> errorsTemp = null;
+    private Set<URI> toLoadTemp = null;
+    private Set<URI> LoadedTemp = null;
+    private Set<URI> errorsTemp = null;
     private List<CrawlerResult> progressionTemp = null;
     private Thread site = null;
     private Thread exceptionSave = null;
@@ -308,7 +310,8 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     /*
      * Salva la visita nella directory specificata
      */
-    private synchronized void SaveVisit(){
+    @Synchronized
+    private void SaveVisit(){
         try {
             //TODO need to be totally redone.
             Output enc = new Output(new FileOutputStream(archiviazione.toString() + "/visita.crawly"));
@@ -331,19 +334,19 @@ public class AveSithisSiteCralwer implements SiteCrawler {
      */
     @SuppressWarnings("unchecked")
     private void LoadVisit() throws VisitException {
-        try(Input dec = new Input(new FileInputStream(archiviazione.toString() + "/visita.crawly"))){
+        try{
+            Input dec = new Input(new FileInputStream(archiviazione.toString() + "/visita.crawly"));
             Kryo kry = kryo.get();
             dominio = kry.readObject(dec, URI.class);
-            toLoadTemp = kry.readObject(dec, List.class);
-            LoadedTemp = kry.readObject(dec, List.class);
-            errorsTemp = kry.readObject(dec, List.class);
+            toLoadTemp = kry.readObject(dec, HashSet.class);
+            LoadedTemp = kry.readObject(dec, HashSet.class);
+            errorsTemp = kry.readObject(dec, HashSet.class);
             progressionTemp  = new ArrayList<>();
             kry.readObject(dec, ArrayList.class).forEach((cres) -> progressionTemp.add((CrawlerResult)cres));
-
         }
         catch (FileNotFoundException e) {
-            throw new VisitException(this, VisitException.VisitState.NOT_RECOGNIZABLE);        }
-        catch (Exception e){ throw new VisitException(this, VisitException.VisitState.CORRUPTED);}
+            throw new VisitException(this, VisitException.VisitState.NOT_RECOGNIZABLE, e);        }
+        catch (Exception e){ throw new VisitException(this, VisitException.VisitState.CORRUPTED, e);}
     }
 
     /**
