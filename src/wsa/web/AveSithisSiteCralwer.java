@@ -27,10 +27,10 @@ import java.util.stream.Stream;
  * Created by Lorenzo on 23/08/2015.
  * Un' implementazione dell'interfaccia SiteCrawler
  */
-
+//TODO completare con le informazioni della struttura dati condivisa, rimuovere vecchie parti del codice. Refactoring.
 public class AveSithisSiteCralwer implements SiteCrawler {
     private enum SiteCrawlerMode{EXPLORATION_ONLY, EXPLORATION_SAVE, LOAD_EXPLORATION_SAVE}
-    private enum SiteCrawlerState{INIT,RUNNING, SUSPENDED, CANCELED , TERMINATED_PROGRESSION_ACTIVE, TERMINATED}
+    private enum SiteCrawlerState{INIT,RUNNING, SUSPENDED, CANCELED, TERMINATED} //Non servono più
     private final AtomicReference<Crawler> crawl = new AtomicReference<>(null);
     private final AtomicReference<SiteCrawlerState> state = new AtomicReference<>(null);
     private SiteCrawlerMode mode = null;
@@ -121,7 +121,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         throwIfCancelled();
         if(getToLoad().contains(uri) || getLoaded().contains(uri) || getErrors().contains(uri)) return;
         crawl.get().add(uri);
-        if(state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE){
+        if(state.get() == SiteCrawlerState.TERMINATED){
             this.start();
         }
     }
@@ -136,7 +136,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
         throwIfCancelled();
         if(getToLoad().contains(uri)) return;
         crawl.get().resubmit(uri);
-        if(state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE){
+        if(state.get() == SiteCrawlerState.TERMINATED){
             this.start();
         }
     }
@@ -152,7 +152,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     public void start() {
         throwIfCancelled();
         if(isRunning()) return;
-        if(state.get() == SiteCrawlerState.INIT || state.get() == SiteCrawlerState.SUSPENDED || state.get() == SiteCrawlerState.TERMINATED || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE) {
+        if(state.get() == SiteCrawlerState.INIT || state.get() == SiteCrawlerState.SUSPENDED || state.get() == SiteCrawlerState.TERMINATED) {
         }
         state.set(SiteCrawlerState.RUNNING);
         if(mode == SiteCrawlerMode.EXPLORATION_ONLY){
@@ -185,7 +185,8 @@ public class AveSithisSiteCralwer implements SiteCrawler {
     @Override
     public void suspend() {
         throwIfCancelled();
-        if(state.get() != SiteCrawlerState.RUNNING  || state.get() != SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE) return;
+        System.out.println("suspending!");
+        if(state.get() != SiteCrawlerState.RUNNING) return;
         state.set(SiteCrawlerState.SUSPENDED);
         crawl.get().suspend();
         if(mode != SiteCrawlerMode.EXPLORATION_ONLY ) site.interrupt();
@@ -277,7 +278,7 @@ public class AveSithisSiteCralwer implements SiteCrawler {
      */
     @Override
     public boolean isRunning() {
-        return state.get() == SiteCrawlerState.RUNNING || state.get() == SiteCrawlerState.TERMINATED_PROGRESSION_ACTIVE;
+        return state.get() == SiteCrawlerState.RUNNING;
     }
 
     @Override
